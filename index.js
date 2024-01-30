@@ -27,7 +27,7 @@ async function generateImage() {
 
 generateImage();*/
 
-const puppeteer = require("puppeteer");
+/*const puppeteer = require("puppeteer");
 const fs = require("fs").promises;
 
 console.time("puppeteer");
@@ -52,6 +52,38 @@ async function generateImage() {
     await browser.close();
 
     console.timeEnd("puppeteer");
+  } catch (error) {
+    console.error("An error occurred:", error);
+  }
+}
+
+generateImage();*/
+
+const playwright = require("playwright");
+const fs = require("fs").promises;
+
+console.time("playwright");
+
+async function generateImage() {
+  try {
+    const browser = await playwright.chromium.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+
+    const page = await browser.newPage();
+
+    await page.goto(`file://${__dirname}/test.html`);
+
+    await page.screenshot({
+      path: "screenshot.jpg",
+      type: "jpeg",
+      quality: 50,
+    });
+
+    await browser.close();
+
+    console.timeEnd("playwright");
   } catch (error) {
     console.error("An error occurred:", error);
   }

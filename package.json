@@ -13,6 +13,7 @@
     "html-to-image": "^1.11.11",
     "jsdom": "^24.0.0",
     "node-html-to-image": "^4.0.0",
+    "playwright": "^1.41.1",
     "puppeteer": "^21.10.0"
   }
 }
