@@ -34,16 +34,14 @@ console.time("puppeteer");
 
 async function generateImage() {
   try {
-    const htmlContent = await fs.readFile("./test.html", "utf8");
-
     const browser = await puppeteer.launch({
       headless: "new",
-      args: ["--no-sandbox"],
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     const page = await browser.newPage();
 
-    await page.setContent(htmlContent);
+    await page.goto(`file://${__dirname}/test.html`);
 
     await page.screenshot({
       path: "screenshot.jpg",
