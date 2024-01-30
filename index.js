@@ -9,7 +9,7 @@ nodeHtmlToImage({
   content: {
     test: "Yakov",
   },
-  puppeteerArgs: ["--no-sandbox"],
+  puppeteerArgs: ["--no-sandbox", "--disable-setuid-sandbox"],
   html: fs.readFileSync("./test.html", "utf8"),
 })
   .then(() => {
