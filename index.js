@@ -4,14 +4,17 @@ const fs = require('fs')
 console.time('nodeHtmlToImage')
 
 nodeHtmlToImage({
-    type: 'jpeg',
-    quality: 50,
-    content: {
-        test: "Yakov"
-    },
-    html: fs.readFileSync('./test.html', 'utf8'),
-}).then(() => {
-    console.timeEnd('nodeHtmlToImage')
-}).catch((error) => {
-    console.error('An error occurred:', error)
+  type: "jpeg",
+  quality: 50,
+  content: {
+    test: "Yakov",
+  },
+  puppeteerArgs: ["--no-sandbox"],
+  html: fs.readFileSync("./test.html", "utf8"),
 })
+  .then(() => {
+    console.timeEnd("nodeHtmlToImage");
+  })
+  .catch((error) => {
+    console.error("An error occurred:", error);
+  });
