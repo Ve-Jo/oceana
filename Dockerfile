@@ -1,55 +1,17 @@
 # Use a base image with Node.js and necessary system libraries
 FROM node:18
 
-# Install necessary system libraries
-RUN apt-get update && apt-get install -y \
-    libnss3 \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libcups2 \
-    libgbm1 \
-    libasound2 \
-    libpangocairo-1.0-0 \
-    libxss1 \
-    libgtk-3-0 \
-    libxshmfence1 \
-    libglu1 \
-    libsoup2.4-1 \
-    libgstreamer1.0-0 \
-    libwoff1 \
-    libopus0 \
-    libharfbuzz-icu0 \
-    libenchant-2-2 \
-    libsecret-1-0 \
-    libhyphen0 \
-    libmanette-0.2-0 \
-    libflite1 \
-    libsoup-3.0.so.0 \
-    libvpx.so.7 \
-    libgstallocators-1.0.so.0 \
-    libgstapp-1.0.so.0 \ 
-    libgstpbutils-1.0.so.0 \ 
-    libgstaudio-1.0.so.0 \
-    libgsttag-1.0.so.0 \
-    libgstvideo-1.0.so.0 \
-    libgstgl-1.0.so.0 \
-    libgstcodecparsers-1.0.so.0 \
-    libgstfft-1.0.so.0 \
-    libGLESv2.so.2 \
-    libx264.so \
-    && rm -rf /var/lib/apt/lists/*
-
 # Set the working directory
 WORKDIR /app
 
 # Copy package.json and package-lock.json to install dependencies
 COPY package*.json ./
 
+# Install Playwright with Webkit
+RUN npx playwright install-deps webkit
+
 # Install dependencies
 RUN npm ci
-
-# Install Playwright with Webkit
-RUN npx playwright install webkit
 
 # Copy application files
 COPY . .
