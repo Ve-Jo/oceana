@@ -62,10 +62,12 @@ generateImage();*/
 const playwright = require("playwright");
 const fs = require("fs").promises;
 
-console.time("playwright browser");
+
 
 async function generateImage() {
   try {
+    console.time("playwright browser");
+
     const browser = await playwright.chromium.launch({
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
