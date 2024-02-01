@@ -62,7 +62,7 @@ generateImage();*/
 const playwright = require("playwright");
 const fs = require("fs").promises;
 
-console.time("playwright");
+console.time("playwright browser");
 
 async function generateImage() {
   try {
@@ -70,6 +70,10 @@ async function generateImage() {
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
+
+    console.timeEnd("playwright browser");
+
+    console.time("playwright page");
 
     const page = await browser.newPage();
 
@@ -83,7 +87,7 @@ async function generateImage() {
 
     await browser.close();
 
-    console.timeEnd("playwright");
+    console.timeEnd("playwright page");
   } catch (error) {
     console.error("An error occurred:", error);
   }
