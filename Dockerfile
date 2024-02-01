@@ -5,7 +5,6 @@ RUN apt-get update && apt-get install -y \
     libgstreamer1.0-0 \
     libatomic1 \
     libxslt1.1 \
-    libwoff2dec1.0.2 \
     libvpx7 \
     libevent-2.1-7 \
     libopus0 \
@@ -19,7 +18,6 @@ RUN apt-get update && apt-get install -y \
     libmanette-0.2-0 \
     libflite1 \
     libgles2 \
-    libx264-152 \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
