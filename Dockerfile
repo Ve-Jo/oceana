@@ -24,6 +24,19 @@ RUN apt-get update && apt-get install -y \
     libhyphen0 \
     libmanette-0.2-0 \
     libflite1 \
+    libsoup-3.0.so.0 \
+    libvpx.so.7 \
+    libgstallocators-1.0.so.0 \
+    libgstapp-1.0.so.0 \ 
+    libgstpbutils-1.0.so.0 \ 
+    libgstaudio-1.0.so.0 \
+    libgsttag-1.0.so.0 \
+    libgstvideo-1.0.so.0 \
+    libgstgl-1.0.so.0 \
+    libgstcodecparsers-1.0.so.0 \
+    libgstfft-1.0.so.0 \
+    libGLESv2.so.2 \
+    libx264.so \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
