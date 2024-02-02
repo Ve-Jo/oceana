@@ -69,9 +69,9 @@ async function generateImage() {
     console.time("playwright browser");
 
     const browser = await playwright.webkit.launch({
-      headless: true,
+      /*headless: true,
       javaScriptEnabled: false,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],*/
     });
 
     console.timeEnd("playwright browser");
