@@ -10,6 +10,8 @@ COPY package*.json ./
 # Install Playwright with Webkit
 RUN npx playwright install-deps webkit
 
+RUN npx playwright install webkit
+
 # Install dependencies
 RUN npm ci
 
