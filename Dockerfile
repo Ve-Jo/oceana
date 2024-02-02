@@ -8,9 +8,9 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install Playwright with Webkit
-RUN npx playwright install-deps webkit
+RUN npx playwright install-deps chromium
 
-RUN npx playwright install webkit
+RUN npx playwright install chromium
 
 # Install dependencies
 RUN npm ci
