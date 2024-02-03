@@ -5,8 +5,7 @@ const path = require("path");
 module.exports = function (client) {
 	client.commands = new Collection();
 
-	const commandsPath = path.resolve(__dirname, "../", "cmds");
-	console.log(commandsPath);
+	const commandsPath = path.resolve(import.meta.dir, "../", "cmds");
 
 	const commandFiles = fs
 		.readdirSync("./src/cmds")
