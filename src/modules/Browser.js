@@ -28,6 +28,7 @@ async function startBrowser() {
 }
 
 async function createPage(userid) {
+	if (!browser) await startBrowser();
 	try {
 		if (!pages[userid]) {
 			const page = await browser.newPage();
