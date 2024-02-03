@@ -1,14 +1,11 @@
-//browser plywright, create it
-
 const playwright = require("playwright");
 const pages = {
 	//user-id: //page
 };
-let browser;
+let browser = null;
 
 module.exports = function (client) {
 	client.browser = {
-		startBrowser,
 		createPage,
 		screenshotPage,
 		closePage,
@@ -46,6 +43,12 @@ async function screenshotPage(userid, html) {
 		let buffer = await page.screenshot({
 			type: "jpeg",
 			quality: 50,
+			clip: {
+				x: 0,
+				y: 0,
+				width: 600,
+				height: 1200,
+			},
 		});
 		return buffer;
 	} catch (error) {
@@ -58,6 +61,10 @@ async function closePage(userid) {
 		const page = pages[userid];
 		await page.close();
 		delete pages[userid];
+		if (!Object.keys(pages).length) {
+			await browser.close();
+			browser = null;
+		}
 	} catch (error) {
 		console.error("An error occurred:", error);
 	}

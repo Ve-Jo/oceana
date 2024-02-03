@@ -5,11 +5,6 @@ module.exports = {
 		.setName("test")
 		.setDescription("Test command"),
 	async execute(client, interaction) {
-		console.log("start");
-		console.time("playwright browser");
-		await client.browser.startBrowser();
-		console.timeEnd("playwright browser");
-		console.time("playwright page");
 		await client.browser.createPage(interaction.user.id);
 		let buffer = await client.browser.screenshotPage(
 			interaction.user.id,
