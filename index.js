@@ -1,12 +1,34 @@
-const { Client, GatewayIntentBits } = require("discord.js");
+const { Client, Events, GatewayIntentBits } = require("discord.js");
 require("dotenv").config();
 
 const client = new Client({
-  intents: [GatewayIntentBits.GuildMessages],
+	intents: [GatewayIntentBits.GuildMessages],
 });
 
-client.on("ready", () => {
-  console.log("Bot is ready");
+client.on(Events.ClientReady, () => {
+	console.log("Bot is ready");
+});
+
+client.on(Events.InteractionCreate, async (interaction) => {
+	if (!interaction.isCommand()) return;
+
+	const command = client.commands.get(interaction.commandName);
+
+	if (!command) return;
+
+	try {
+		await command.execute(client, interaction);
+	} catch (error) {
+		console.error(error);
+		await interaction.reply({
+			content: "There was an error while executing this command!",
+			ephemeral: true,
+		});
+	}
 });
 
 client.login(process.env.TOKEN);
+
+for (const file of ["Browser", "CommandsHandler", "Slashes"]) {
+	require(`./src/modules/${file}`)(client);
+}
