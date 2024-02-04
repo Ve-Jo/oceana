@@ -10,6 +10,10 @@ const UserModel = new mongoose.model("User", {
 	y: Number,
 	money: Number,
 	level: Number,
+	energy: {
+		current: Number,
+		max: Number,
+	},
 	diamonds: Number,
 	xp: {
 		current: Number,
@@ -22,6 +26,10 @@ const UserModel = new mongoose.model("User", {
 	world: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "World",
+	},
+	upgrades: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Upgrades",
 	},
 });
 
