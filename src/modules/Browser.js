@@ -15,7 +15,7 @@ module.exports = function (client) {
 async function startBrowser() {
 	try {
 		browser = await puppeteer.launch({
-			headless: false,
+			headless: "new",
 			javaScriptEnabled: false,
 			args: ["--no-sandbox", "--disable-setuid-sandbox"],
 		});
