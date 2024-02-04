@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
+const fs = require("fs");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -8,7 +9,7 @@ module.exports = {
 		await client.browser.createPage(interaction.user.id);
 		let buffer = await client.browser.screenshotPage(
 			interaction.user.id,
-			"<h1>Hello, World!</h1>"
+			fs.readFileSync("src/htmls/test.html", "utf8")
 		);
 		await client.browser.closePage(interaction.user.id);
 		console.timeEnd("playwright page");
