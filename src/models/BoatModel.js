@@ -5,9 +5,16 @@ const BoatModel = new mongoose.model("Boat", {
 	xp: Number,
 	xp_max: Number,
 	rotation: Number,
-	speed: {
-		current: Number,
-		max: Number,
+	speed: Number,
+	guns: {
+		level: Number,
+		damage: Number,
+		range: Number,
+	},
+	fishing_rod: {
+		max_distance: Number,
+		durability: Number,
+		durability_max: Number,
 	},
 	cargo: {
 		current: Number,
