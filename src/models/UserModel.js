@@ -6,18 +6,45 @@ const UserModel = new mongoose.model("User", {
 		default: Date.now,
 	},
 	id: Number,
-	x: Number,
-	y: Number,
-	money: Number,
-	level: Number,
-	energy: {
-		current: Number,
-		max: Number,
+	x: {
+		type: Number,
+		default: 0,
 	},
-	diamonds: Number,
+	y: {
+		type: Number,
+		default: 0,
+	},
+	money: {
+		type: Number,
+		default: 0,
+	},
+	level: {
+		type: Number,
+		default: 1,
+	},
+	energy: {
+		current: {
+			type: Number,
+			default: 20,
+		},
+		max: {
+			type: Number,
+			default: 20,
+		},
+	},
+	diamonds: {
+		type: Number,
+		default: 0,
+	},
 	xp: {
-		current: Number,
-		max: Number,
+		current: {
+			type: Number,
+			default: 0,
+		},
+		max: {
+			type: Number,
+			default: 120,
+		},
 	},
 	boat: {
 		type: mongoose.Schema.Types.ObjectId,

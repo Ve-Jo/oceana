@@ -1,28 +1,74 @@
 const mongoose = require("mongoose");
 
 const BoatModel = new mongoose.model("Boat", {
-	level: Number,
-	xp: Number,
-	xp_max: Number,
-	rotation: Number,
-	speed: Number,
+	level: {
+		type: Number,
+		default: 1,
+	},
+	xp: {
+		current: {
+			type: Number,
+			default: 0,
+		},
+		max: {
+			type: Number,
+			default: 90,
+		},
+	},
+	rotation: {
+		type: Number,
+		default: 0,
+	},
+	speed: {
+		current: {
+			type: Number,
+			default: 0,
+		},
+		max: {
+			type: Number,
+			default: 10,
+		},
+	},
 	guns: {
-		level: Number,
-		damage: Number,
-		range: Number,
+		level: { type: Number, default: 0 },
+		damage: { type: Number, default: 0 },
+		range: { type: Number, default: 0 },
 	},
 	fishing_rod: {
-		max_distance: Number,
-		durability: Number,
-		durability_max: Number,
+		max_distance: {
+			type: Number,
+			default: 3,
+		},
+		durability: {
+			current: {
+				type: Number,
+				default: 50,
+			},
+			max: {
+				type: Number,
+				default: 50,
+			},
+		},
 	},
 	cargo: {
-		current: Number,
-		max: Number,
+		current: {
+			type: Number,
+			default: 0,
+		},
+		max: {
+			type: Number,
+			default: 10,
+		},
 	},
 	health: {
-		current: Number,
-		max: Number,
+		current: {
+			type: Number,
+			default: 100,
+		},
+		max: {
+			type: Number,
+			default: 100,
+		},
 	},
 });
 

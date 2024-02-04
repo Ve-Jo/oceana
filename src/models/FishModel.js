@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const FishModel = new mongoose.model("Fish", {
-	type: String,
+	type: Number,
 	weight: Number,
 	value: Number,
 	level: Number,

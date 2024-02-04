@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const IslandModel = new mongoose.model("Island", {
-	name: String,
+	name_id: Number,
 	level: Number,
 	x: Number,
 	y: Number,
