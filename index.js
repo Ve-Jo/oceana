@@ -29,6 +29,6 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.login(process.env.TOKEN);
 
-for (const file of ["Browser", "CommandsHandler", "Slashes"]) {
+for (const file of ["Browser", "CommandsHandler", "Slashes", "Mongoose"]) {
 	require(`./src/modules/${file}`)(client);
 }
