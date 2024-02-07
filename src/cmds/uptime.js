@@ -9,21 +9,19 @@ module.exports = {
     .setName('uptime')
     .setDescription('Показывает uptime в виде красивой картинки'),
   async execute(client, interaction) {
-    // Получение данных о системе
     const uptimeData = {
       uptime: process.uptime(),
       totalmem: os.totalmem(),
       freemem: os.freemem(),
       loadavg: os.loadavg(),
       cpus: os.cpus(),
-      // другие данные
     };
 
     // Загрузка и модификация HTML-шаблона
     let html = fs.readFileSync("src/htmls/uptime_template.html", "utf8");
 
     // Заполнение шаблона данными о системе
-    // (реализуй здесь логику подстановки данных в html)
+    // (реализуй здесь логику подстановки данных в html) ток нахуя я это написал?
 
     // Создание страницы и скриншот
     await client.browser.createPage(interaction.user.id);
@@ -32,8 +30,6 @@ module.exports = {
       html // передаем измененный HTML с данными о системе
     );
     await client.browser.closePage(interaction.user.id);
-
-    // Отправка картинки в ответ на команду
     await interaction.reply({ files: [buffer] });
   },
 };
