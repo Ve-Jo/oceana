@@ -13,13 +13,14 @@
     "jsdom": "^24.0.0",
     "mongoose": "^8.1.1",
     "ms": "^2.1.3",
+    "os": "^0.1.2",
     "path": "^0.12.7",
     "puppeteer": "^21.11.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.41.2",
-    "@types/node": "^20.11.16",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/node": "^20.11.16"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
