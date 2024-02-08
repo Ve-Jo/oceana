@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
+const { resolve } = require("path");
 const fs = require("fs");
 
 module.exports = {
@@ -6,14 +7,14 @@ module.exports = {
 		.setName("test")
 		.setDescription("Test command"),
 	async execute(client, interaction) {
+		await interaction.deferReply();
 		await client.browser.createPage(interaction.user.id);
 		let buffer = await client.browser.screenshotPage(
 			interaction.user.id,
-			fs.readFileSync("src/htmls/test.html", "utf8"),
-			{ x: 0, y: 0, width: 600, height: 1200 },
-			50
+			"test.html",
+			{ x: 9, y: 9, width: 600, height: 1200 },
+			100
 		);
-		await client.browser.closePage(interaction.user.id);
-		await interaction.reply({ files: [buffer] });
+		await interaction.editReply({ files: [buffer] });
 	},
 };
