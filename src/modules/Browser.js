@@ -36,19 +36,19 @@ async function createPage(userid) {
 	}
 }
 
-async function screenshotPage(userid, html) {
+async function screenshotPage(
+	userid,
+	html,
+	clip = { x: 0, y: 0, width: 600, height: 600 },
+	quality = 50
+) {
 	try {
 		const page = pages[userid];
 		await page.setContent(html);
 		let buffer = await page.screenshot({
 			type: "jpeg",
-			quality: 50,
-			clip: {
-				x: 0,
-				y: 0,
-				width: 600,
-				height: 1200,
-			},
+			quality: quality,
+			clip: clip,
 		});
 		return buffer;
 	} catch (error) {
