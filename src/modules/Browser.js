@@ -1,4 +1,4 @@
-const puppeteer = require("puppeteer");
+const playwright = require("playwright");
 const pages = {
 	//user-id: //page
 };
@@ -14,9 +14,8 @@ module.exports = function (client) {
 
 async function startBrowser() {
 	try {
-		browser = await puppeteer.launch({
-			headless: "new",
-			javaScriptEnabled: false,
+		browser = await playwright.chromium.launch({
+			headless: false,
 			args: ["--no-sandbox", "--disable-setuid-sandbox"],
 		});
 	} catch (error) {
