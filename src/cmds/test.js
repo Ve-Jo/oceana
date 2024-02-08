@@ -9,10 +9,11 @@ module.exports = {
 		await client.browser.createPage(interaction.user.id);
 		let buffer = await client.browser.screenshotPage(
 			interaction.user.id,
-			fs.readFileSync("src/htmls/test.html", "utf8")
+			fs.readFileSync("src/htmls/test.html", "utf8"),
+			{ x: 0, y: 0, width: 600, height: 1200 },
+			50
 		);
 		await client.browser.closePage(interaction.user.id);
-		console.timeEnd("playwright page");
 		await interaction.reply({ files: [buffer] });
 	},
 };

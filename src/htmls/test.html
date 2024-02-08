@@ -1,6 +1,63 @@
 <html>
-  <head> </head>
-  <body>
-    <h1>Test!! {{test}}</h1>
-  </body>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Jost&display=swap');
+    #upper {
+      width: 600px;
+      height: 1800px;
+      background-color: gray;
+    }
+    #background {
+      background-color: rgba(255, 255, 255, 0.2);
+      width: 600px;
+      height: 120px;
+      border-radius: 0px 0px 45px 45px;
+    }
+    #user_avatar {
+      width: 125px;
+      height: 125px;
+      border-radius: 35%;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+    #xp_bar {
+      width: 150px;
+      height: 35px;
+      background-color: blue;
+      position: absolute;
+      border-radius: 0px 20px 20px 0px;
+      top: 40px;
+      left: 135px;
+    }
+    #xp_bar_ {
+      width: 0%;
+      height: 35px;
+      background-color: red;
+      border-radius: 0px 20px 20px 0px;
+    }
+    #xp_text {
+      font-size: 22px;
+      width: 200px;
+      color: white;
+      mix-blend-mode: difference;
+      font-family: 'Jost', sans-serif;
+      position: absolute;
+      top: 1px;
+      left: 15px;
+    }
+  </style>
+  <script>
+    const ColorThief = require('colorthief');
+    let user_avatar_closer_color = ColorThief.getColor(document.getElementById('user_avatar'));
+    console.log(user_avatar_closer_color);
+  </script>
+  <div id="upper">
+    <div id="background">
+      <div id="xp_bar">
+        <div id="xp_bar_"></div>
+        <label id="xp_text">XP: 0/0</label>
+      </div>
+      <img src="./sources/vejo.png" id="user_avatar"></img>
+    </div>
+  </div>
 </html>
