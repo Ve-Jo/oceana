@@ -29,6 +29,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
 client.login(process.env.TOKEN);
 
+process.on("SIGINT", async () => {
+	await require("./src/modules/HTMLSCleaner")();
+	process.exit(0)
+});
+
 for (const file of ["Browser", "CommandsHandler", "Slashes", "Mongoose"]) {
 	require(`./src/modules/${file}`)(client);
 }
