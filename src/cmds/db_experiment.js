@@ -33,5 +33,11 @@ module.exports = {
 
 		const user = await User.findOne({ id: interaction.user.id });
 		console.log(user);
+
+		//EXAMPLES:
+		//user.money = 50; user.save();
+		//user.boat.xp.current = 50; user.boat.save();
+		//user.world.xp = 50; user.world.save();
+		//user.upgrades.world.fishes_chance_level++; user.upgrades.save();
 	},
 };
