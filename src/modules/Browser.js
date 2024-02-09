@@ -31,7 +31,7 @@ async function startBrowser() {
 	}
 }
 
-async function changePage(userid, html = {}) {
+async function changePage(userid, html = {}, without_temp = false) {
 	if (!pages[userid]) return;
 	const page = pages[userid];
 	const temp_html = new JSDOM(
@@ -46,10 +46,15 @@ async function changePage(userid, html = {}) {
 			continue;
 		}
 		el.setAttribute(attr, value);
-		
 	}
-	fs.writeFileSync(`src/htmls/temp/${userid}.html`, temp_html.serialize());
-	page.file_name = `temp/${userid}.html`;
+	let temp_folder = without_temp
+		? `${page.file_name.replace(".html", "")}`
+		: `temp/${userid}`;
+	if (fs.existsSync(`src/htmls/${temp_folder}`)) {
+		fs.mkdirSync(`src/htmls/${temp_folder}`);
+	}
+	fs.writeFileSync(`src/htmls/${temp_folder}.html`, temp_html.serialize());
+	page.file_name = `${temp_folder}.html`;
 	await page.page.goto(`file://` + html_path + "/" + page.file_name);
 	await page.page.waitForLoadState("domcontentloaded");
 }
@@ -64,8 +69,8 @@ async function createPage(userid, html_name) {
 		if (!pages[userid]) {
 			const page = await browser.newPage();
 			await page.goto(`file://${path.join(html_path, html_name)}`);
-			pages[userid] = { file_name: html_name, page: page };
 			await page.waitForLoadState("domcontentloaded");
+			pages[userid] = { file_name: html_name, page: page };
 		}
 	} catch (error) {
 		console.error("An error occurred:", error);
