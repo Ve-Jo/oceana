@@ -50,10 +50,10 @@ async function changePage(userid, html = {}, without_temp = false) {
 	let temp_folder = without_temp
 		? `${page.file_name.replace(".html", "")}`
 		: `temp/${userid}`;
-	if (fs.existsSync(`src/htmls/${temp_folder}`)) {
-		fs.mkdirSync(`src/htmls/${temp_folder}`);
+	if (without_temp == false && !fs.existsSync(`./src/htmls/temp`)) {
+		fs.mkdirSync(`./src/htmls/temp`);
 	}
-	fs.writeFileSync(`src/htmls/${temp_folder}.html`, temp_html.serialize());
+	fs.writeFileSync(`./src/htmls/${temp_folder}.html`, temp_html.serialize());
 	page.file_name = `${temp_folder}.html`;
 	await page.page.goto(`file://` + html_path + "/" + page.file_name);
 	await page.page.waitForLoadState("domcontentloaded");
