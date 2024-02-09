@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { JSDOM } = require("jsdom");
-const fs = require('fs')
+const fs = require("fs");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -18,7 +18,7 @@ module.exports = {
 			{ x: 9, y: 9, width: 600, height: 1200 },
 			100
 		);
-		await client.browser.closePage(interaction.user.id);
+		/*await client.browser.closePage(interaction.user.id);*/
 		await interaction.editReply({ files: [buffer] });
 	},
 };
