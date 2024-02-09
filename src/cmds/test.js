@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { resolve } = require("path");
-const fs = require("fs");
+const { JSDOM } = require("jsdom");
+const fs = require('fs')
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -8,10 +8,12 @@ module.exports = {
 		.setDescription("Test command"),
 	async execute(client, interaction) {
 		await interaction.deferReply();
-		await client.browser.createPage(interaction.user.id);
+
+		await client.browser.createPage(interaction.user.id, "test.html");
+		await client.browser.changePage(interaction.user.id, { "user_avatar.src": await interaction.user.displayAvatarURL()});
+
 		let buffer = await client.browser.screenshotPage(
 			interaction.user.id,
-			"test.html",
 			{ x: 9, y: 9, width: 600, height: 1200 },
 			100
 		);
