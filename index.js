@@ -31,9 +31,9 @@ client.login(process.env.TOKEN);
 
 process.on("SIGINT", async () => {
 	await require("./src/modules/HTMLSCleaner")();
-	process.exit(0)
+	process.exit(0);
 });
 
-for (const file of ["Browser", "CommandsHandler", "Slashes", "Mongoose"]) {
-	require(`./src/modules/${file}`)(client);
+for (const file of ["Browser", "Mongoose", "CommandsHandler", "Slashes"]) {
+	await require(`./src/modules/${file}`)(client);
 }
