@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const BoatModel = new mongoose.model("Boat", {
+const BoatSchema = new mongoose.Schema({
 	level: {
 		type: Number,
 		default: 1,
@@ -72,6 +72,6 @@ const BoatModel = new mongoose.model("Boat", {
 	},
 });
 
-const Boat = mongoose.model("Boat", BoatModel);
+const Boat = mongoose.model("Boat", BoatSchema);
 
 module.exports = Boat;

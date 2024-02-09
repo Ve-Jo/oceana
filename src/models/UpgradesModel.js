@@ -1,38 +1,38 @@
 const mongoose = require("mongoose");
 
-const UpgradesModel = new mongoose.model("Upgrades", {
+const UpgradesSchema = new mongoose.Schema({
 	world: {
-		fishes_chance_level: { Number, default: 1 },
-		fishes_value_level: { Number, default: 1 },
-		less_enemies_level: { Number, default: 1 },
-		xp_multiplier_level: { Number, default: 1 },
-		more_threasures_level: { Number, default: 1 },
+		fishes_chance_level: { type: Number, default: 1 },
+		fishes_value_level: { type: Number, default: 1 },
+		less_enemies_level: { type: Number, default: 1 },
+		xp_multiplier_level: { type: Number, default: 1 },
+		more_threasures_level: { type: Number, default: 1 },
 	},
 	boat: {
-		max_speed: { Number, default: 1 },
-		rotation_speed: { Number, default: 1 },
-		rod_distance_level: { Number, default: 1 },
-		rod_durability_level: { Number, default: 1 },
-		rods_counter: { Number, default: 1 },
-		guns_level: { Number, default: 1 },
-		guns_counter: { Number, default: 0 },
-		cargo_level: { Number, default: 1 },
-		health_level: { Number, default: 1 },
+		max_speed: { type: Number, default: 1 },
+		rotation_speed: { type: Number, default: 1 },
+		rod_distance_level: { type: Number, default: 1 },
+		rod_durability_level: { type: Number, default: 1 },
+		rods_counter: { type: Number, default: 1 },
+		guns_level: { type: Number, default: 1 },
+		guns_counter: { type: Number, default: 0 },
+		cargo_level: { type: Number, default: 1 },
+		health_level: { type: Number, default: 1 },
 	},
 	user: {
-		energy_max_level: { Number, default: 1 },
-		visibility_level: { Number, default: 1 },
-		visibility_in_fog_level: { Number, default: 1 },
+		energy_max_level: { type: Number, default: 1 },
+		visibility_level: { type: Number, default: 1 },
+		visibility_in_fog_level: { type: Number, default: 1 },
 	},
 	skills: {
-		islands_outside_map_level: { Number, default: 0 },
-		enemies_outside_map_level: { Number, default: 0 },
-		fast_boat_rotate_level: { Number, default: 0 },
-		catch_all_fish_level: { Number, default: 0 },
-		catch_double_fish_level: { Number, default: 0 },
+		islands_outside_map_level: { type: Number, default: 0 },
+		enemies_outside_map_level: { type: Number, default: 0 },
+		fast_boat_rotate_level: { type: Number, default: 0 },
+		catch_all_fish_level: { type: Number, default: 0 },
+		catch_double_fish_level: { type: Number, default: 0 },
 	},
 });
 
-const Upgrades = mongoose.model("Upgrades", UpgradesModel);
+const Upgrades = mongoose.model("Upgrades", UpgradesSchema);
 
 module.exports = Upgrades;

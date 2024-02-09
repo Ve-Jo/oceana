@@ -1,8 +1,7 @@
-import ms from "ms";
-
 const mongoose = require("mongoose");
+const ms = require("ms");
 
-const WorldModel = new mongoose.model("World", {
+const WorldSchema = new mongoose.Schema({
 	level: {
 		type: Number,
 		default: 1,
@@ -30,7 +29,7 @@ const WorldModel = new mongoose.model("World", {
 		running: { type: Boolean, default: false },
 		will_run: {
 			type: Date,
-			default: Date.now + ms("5m"),
+			default: Date.now() + ms("5m"),
 		},
 		type: { type: Number, default: 0 },
 	},
@@ -38,28 +37,34 @@ const WorldModel = new mongoose.model("World", {
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Fish",
+			autocomplete: true,
 		},
 	],
 	islands: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Island",
+			autocomplete: true,
 		},
 	],
 	threasures: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Threasure",
+			autocomplete: true,
 		},
 	],
 	world_decorations: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "WorldDecoration",
+			autocomplete: true,
 		},
 	],
 });
 
-const World = mongoose.model("World", WorldModel);
+WorldSchema.plugin(require("mongoose-autopopulate"));
+
+const World = mongoose.model("World", WorldSchema);
 
 module.exports = World;

@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
-const UserModel = new mongoose.model("User", {
+const UserSchema = new mongoose.Schema({
 	started_playing: {
 		type: Date,
 		default: Date.now,
 	},
-	id: Number,
+	id: { type: Number, unique: true },
 	x: {
 		type: Number,
 		default: 0,
@@ -49,17 +49,22 @@ const UserModel = new mongoose.model("User", {
 	boat: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Boat",
+		autopopulate: true,
 	},
 	world: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "World",
+		autopopulate: true,
 	},
 	upgrades: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Upgrades",
+		autopopulate: true,
 	},
 });
 
-const User = mongoose.model("User", UserModel);
+UserSchema.plugin(require("mongoose-autopopulate"));
+
+const User = mongoose.model("User", UserSchema);
 
 module.exports = User;

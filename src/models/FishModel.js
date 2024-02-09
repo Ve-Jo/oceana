@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const FishModel = new mongoose.model("Fish", {
+const FishSchema = new mongoose.Schema({
 	type: Number,
 	weight: Number,
 	value: Number,
@@ -8,6 +8,6 @@ const FishModel = new mongoose.model("Fish", {
 	rarity: Number,
 });
 
-const Fish = mongoose.model("Fish", FishModel);
+const Fish = mongoose.model("Fish", FishSchema);
 
 module.exports = Fish;

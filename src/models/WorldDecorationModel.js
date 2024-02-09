@@ -1,11 +1,14 @@
 const mongoose = require("mongoose");
 
-const WorldDecorationModel = new mongoose.model("WorldDecoration", {
+const WorldDecorationSchema = new mongoose.Schema({
 	x: Number,
 	y: Number,
 	type: String,
 });
 
-const WorldDecoration = mongoose.model("WorldDecoration", WorldDecorationModel);
+const WorldDecoration = mongoose.model(
+	"WorldDecoration",
+	WorldDecorationSchema
+);
 
 module.exports = WorldDecoration;

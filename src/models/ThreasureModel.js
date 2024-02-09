@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
-const ThreasureModel = new mongoose.model("Threasure", {
+const ThreasureSchema = new mongoose.Schema({
 	x: { type: Number, required: true },
 	y: { type: Number, required: true },
 	level: { type: Number, required: true },
 });
 
-const Threasure = mongoose.model("Threasure", ThreasureModel);
+const Threasure = mongoose.model("Threasure", ThreasureSchema);
 
 module.exports = Threasure;
