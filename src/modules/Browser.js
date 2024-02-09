@@ -1,13 +1,13 @@
 const { chromium } = require("playwright");
-const { resolve } = require("path");
+const path = require("path");
 const { JSDOM } = require("jsdom");
-const fs = require('fs')
+const fs = require("fs");
 const pages = {
 	//user-id: { file_name: name, page: page }
 };
 let browser = false;
 
-const html_path = process.cwd() + "/src/htmls"
+const html_path = path.resolve(import.meta.dir, "../html");
 
 module.exports = function (client) {
 	client.browser = {
@@ -22,7 +22,7 @@ async function startBrowser() {
 	try {
 		console.time("browser start");
 		browser = await chromium.launch({
-			headless: true,
+			headless: false,
 			args: ["--no-sandbox", "--disable-setuid-sandbox"],
 		});
 		console.timeEnd("browser start");
@@ -32,18 +32,22 @@ async function startBrowser() {
 }
 
 async function changePage(userid, html = {}) {
-	if (!pages[userid]) return
+	if (!pages[userid]) return;
 	const page = pages[userid];
-	const temp_html = new JSDOM(fs.readFileSync("file:/" + html_path + "/" + page.file_name, "utf8"));
+	const temp_html = new JSDOM(
+		fs.readFileSync("file://" + html_path + "/" + page.file_name, "utf8")
+	);
 	//for example, my html will be
 	//{ "user_avatar.src": "link" }
 	for (const key in html) {
 		const [element, attribute] = key.split(".");
-		temp_html.window.document.querySelector(element).setAttribute(attribute, html[key]);
+		temp_html.window.document
+			.querySelector(element)
+			.setAttribute(attribute, html[key]);
 	}
 	fs.writeFileSync(`src/htmls/temp/${userid}.html`, temp_html.serialize());
 	page.file_name = `temp/${userid}.html`;
-	await page.page.goto(`file:/` + html_path + "/" + page.file_name);
+	await page.page.goto(`file://` + html_path + "/" + page.file_name);
 	await page.page.waitForLoadState("domcontentloaded");
 }
 
@@ -56,9 +60,7 @@ async function createPage(userid, html_name) {
 		}
 		if (!pages[userid]) {
 			const page = await browser.newPage();
-			await page.goto(
-				`file:/` + html_path + "/" + html_name
-			);
+			await page.goto(`file://${path.join(html_path, html_name)}`);
 			await page.waitForLoadState("domcontentloaded");
 			pages[userid] = { file_name: html_name, page: page };
 		}

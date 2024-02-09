@@ -10,7 +10,7 @@ module.exports = {
 		await interaction.deferReply();
 
 		await client.browser.createPage(interaction.user.id, "test.html");
-		await client.browser.changePage(interaction.user.id, { "user_avatar.src": await interaction.user.displayAvatarURL()});
+		/*await client.browser.changePage(interaction.user.id, { "user_avatar.src": await interaction.user.displayAvatarURL()});*/
 
 		let buffer = await client.browser.screenshotPage(
 			interaction.user.id,
