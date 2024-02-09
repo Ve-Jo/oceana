@@ -7,7 +7,7 @@ const pages = {
 };
 let browser = false;
 
-const html_path = path.resolve(import.meta.dir, "../html");
+const html_path = path.resolve(import.meta.dir, "../htmls");
 
 module.exports = function (client) {
 	client.browser = {
@@ -22,7 +22,7 @@ async function startBrowser() {
 	try {
 		console.time("browser start");
 		browser = await chromium.launch({
-			headless: false,
+			headless: true,
 			args: ["--no-sandbox", "--disable-setuid-sandbox"],
 		});
 		console.timeEnd("browser start");
@@ -35,15 +35,18 @@ async function changePage(userid, html = {}) {
 	if (!pages[userid]) return;
 	const page = pages[userid];
 	const temp_html = new JSDOM(
-		fs.readFileSync("file://" + html_path + "/" + page.file_name, "utf8")
+		fs.readFileSync(`src/htmls/${page.file_name}`, "utf8")
 	);
-	//for example, my html will be
-	//{ "user_avatar.src": "link" }
-	for (const key in html) {
-		const [element, attribute] = key.split(".");
-		temp_html.window.document
-			.querySelector(element)
-			.setAttribute(attribute, html[key]);
+	for (const [key, value] of Object.entries(html)) {
+		const [id, attr] = key.split(".");
+		const el = temp_html.window.document.getElementById(id);
+		if (!el) continue;
+		if (!attr) {
+			el.textContent = value;
+			continue;
+		}
+		el.setAttribute(attr, value);
+		
 	}
 	fs.writeFileSync(`src/htmls/temp/${userid}.html`, temp_html.serialize());
 	page.file_name = `temp/${userid}.html`;
@@ -61,8 +64,8 @@ async function createPage(userid, html_name) {
 		if (!pages[userid]) {
 			const page = await browser.newPage();
 			await page.goto(`file://${path.join(html_path, html_name)}`);
-			await page.waitForLoadState("domcontentloaded");
 			pages[userid] = { file_name: html_name, page: page };
+			await page.waitForLoadState("domcontentloaded");
 		}
 	} catch (error) {
 		console.error("An error occurred:", error);
@@ -97,10 +100,13 @@ async function screenshotPage(
 async function closePage(userid) {
 	try {
 		const page = pages[userid];
-		if (fs.fileExistsSync(`src/htmls/temp/${userid}.html`)) {
-			fs.unlinkSync(`src/htmls/temp/${userid}.html`);
+		await page.page.close();
+		if (page.file_name.startsWith("temp/")) {
+			let delete_path = `./src/htmls/${page.file_name}`;
+			if (fs.existsSync(delete_path)) {
+				fs.unlinkSync(delete_path);
+			}
 		}
-		await page.close();
 		delete pages[userid];
 		if (!Object.keys(pages).length) {
 			await browser.close();
