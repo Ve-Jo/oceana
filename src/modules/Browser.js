@@ -67,7 +67,7 @@ async function createPage(userid, html_name) {
 			delete pages[userid];
 		}
 		if (!pages[userid]) {
-			const page = await browser.newPage();
+			const page = await browser.newPage({ deviceScaleFactor: 2 });
 			await page.goto(`file://${path.join(html_path, html_name)}`);
 			await page.waitForLoadState("domcontentloaded");
 			pages[userid] = { file_name: html_name, page: page };

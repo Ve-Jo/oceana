@@ -10,12 +10,13 @@ module.exports = {
 		await interaction.deferReply();
 		await client.browser.createPage(interaction.user.id, "test.html");
 		await client.browser.changePage(interaction.user.id, {
-			"user_avatar.src": await interaction.user.displayAvatarURL(),
+			"user_avatar.src":
+				(await interaction.user.displayAvatarURL()) + "?size=2048",
 			xp_text: Date.now(),
 		});
 		let buffer = await client.browser.screenshotPage(
 			interaction.user.id,
-			{ x: 9, y: 9, width: 600, height: 1200 },
+			{ x: 9, y: 9, width: 600, height: 900 },
 			100
 		);
 		/*await client.browser.closePage(interaction.user.id);*/
