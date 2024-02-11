@@ -13,31 +13,36 @@ module.exports = {
 		.setName("db")
 		.setDescription("Mongoose database experiment command"),
 	async execute(client, interaction) {
-		await interaction.deferReply();
+		let user = await User.findOneAndUpdate(
+			{ id: interaction.user.id },
+			{ upsert: true, new: true }
+		);
+		if (!user) {
+			await User.create({ id: interaction.user.id });
+		}
 
-		/*const user = new User({ id: interaction.user.id });
+		let models = [Boat, World, Upgrades];
+		for (let model of models) {
+			let document = await model.findOneAndUpdate(
+				{ [`${model.modelName.toLowerCase()}_for_id`]: interaction.user.id },
+				{ upsert: true, new: true }
+			);
+			if (!document) {
+				document = await model.create({
+					[`${model.modelName.toLowerCase()}_for_id`]: interaction.user.id,
+				});
+			}
+			user[`${model.modelName.toLowerCase()}`] = document._id;
+		}
+		await user.save();
 
-		const boat = new Boat();
-		await boat.save();
-		user.boat = boat._id;
-
-		const world = new World();
-		await world.save();
-		user.world = world._id;
-
-		const upgrades = new Upgrades();
-		await upgrades.save();
-		user.upgrades = upgrades._id;
-
-		await user.save();*/
-
-		const user = await User.findOne({ id: interaction.user.id });
-		console.log(user);
+		const find_user = await User.findOne({ id: interaction.user.id });
+		console.log(find_user);
 
 		//EXAMPLES:
-		//user.money = 50; user.save();
-		//user.boat.xp.current = 50; user.boat.save();
-		//user.world.xp = 50; user.world.save();
-		//user.upgrades.world.fishes_chance_level++; user.upgrades.save();
+		//find_user.money = 50; user.save();
+		//find_user.boat.xp.current = 50; user.boat.save();
+		//find_user.world.xp = 50; user.world.save();
+		//find_user.upgrades.world.fishes_chance_level++; user.upgrades.save();
 	},
 };
