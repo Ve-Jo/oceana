@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const UpgradesSchema = new mongoose.Schema({
+	upgrades_for_id: {
+		type: Number,
+		required: true,
+		unique: true,
+	},
 	world: {
 		fishes_chance_level: { type: Number, default: 1 },
 		fishes_value_level: { type: Number, default: 1 },

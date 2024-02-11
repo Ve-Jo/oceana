@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 const ms = require("ms");
 
 const WorldSchema = new mongoose.Schema({
+	world_for_id: {
+		type: Number,
+		required: true,
+		unique: true,
+	},
 	level: {
 		type: Number,
 		default: 1,
@@ -62,8 +67,6 @@ const WorldSchema = new mongoose.Schema({
 		},
 	],
 });
-
-WorldSchema.plugin(require("mongoose-autopopulate"));
 
 const World = mongoose.model("World", WorldSchema);
 

@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const BoatSchema = new mongoose.Schema({
+	boat_for_id: {
+		type: Number,
+		required: true,
+		unique: true,
+	},
 	level: {
 		type: Number,
 		default: 1,

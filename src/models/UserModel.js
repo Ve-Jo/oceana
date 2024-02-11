@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
+	id: { type: Number, required: true, unique: true },
 	started_playing: {
 		type: Date,
-		default: Date.now,
+		default: Date.now(),
 	},
-	id: { type: Number, unique: true },
 	x: {
 		type: Number,
 		default: 0,
