@@ -1,6 +1,4 @@
-// ебать мой хуй что я сделал, кринж, короче ты за меня сделаешь это говно а я попробую ему сделать красивый CSS
-
-const { SlashCommandBuilder, AttachmentBuilder } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
 const fs = require("fs");
 const os = require("os");
 
