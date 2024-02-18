@@ -4,7 +4,7 @@ require("dotenv").config();
 let latest_lang;
 
 const client = new Client({
-	intents: [GatewayIntentBits.GuildMessages],
+	intents: [GatewayIntentBits.Guilds],
 });
 
 client.on(Events.ClientReady, () => {
