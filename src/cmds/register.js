@@ -10,8 +10,10 @@ const { SlashCommandBuilder } = require("discord.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("db")
-		.setDescription("Mongoose database experiment command"),
+		.setName("register")
+		.setDescription(
+			"Команда для первой регистрации пользователя в базе данных."
+		),
 	async execute(client, interaction) {
 		let user = await User.findOneAndUpdate(
 			{ id: interaction.user.id },
@@ -19,6 +21,13 @@ module.exports = {
 		);
 		if (!user) {
 			await User.create({ id: interaction.user.id });
+		}
+		if (user) {
+			return interaction.reply({
+				content:
+					"Вы уже зарегистрированы в базе данных. Можете сразу запустить команду `/game.`",
+				ephemeral: true,
+			});
 		}
 
 		let models = [Boat, World, Upgrades];
@@ -36,8 +45,10 @@ module.exports = {
 		}
 		await user.save();
 
-		const find_user = await User.findOne({ id: interaction.user.id });
-		console.log(find_user);
+		return interaction.reply({
+			content: "Первая регистрация прошла успешно. Теперь вы можете играть.",
+			ephemeral: true,
+		});
 
 		//EXAMPLES:
 		//find_user.money = 50; user.save();
