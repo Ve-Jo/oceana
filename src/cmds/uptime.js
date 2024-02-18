@@ -18,10 +18,10 @@ module.exports = {
 
 		await client.browser.changePage(interaction.user.id, {
 			uptime: "Uptime: " + uptime + " minutes",
-			total_memory: "Total memory: " + totalmem + " MB",
-			free_memory: "Free memory: " + freemem + " MB",
-			load_average: "Load average (1m): " + loadavg,
-			cpu_model: "CPU model: " + cpuModel,
+			total_memory: "💻 Total memory: " + totalmem + " MB",
+			free_memory: "📻 Free memory: " + freemem + " MB",
+			load_average: "💡 Load average (1m): " + loadavg,
+			cpu_model: "🔌 CPU model: " + cpuModel,
 		});
 
 		let buffer = await client.browser.screenshotPage(
