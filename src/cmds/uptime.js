@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
-const fs = require("fs");
+const { SlashCommandBuilder, AttachmentBuilder } = require("discord.js");
 const os = require("os");
 
 module.exports = {
