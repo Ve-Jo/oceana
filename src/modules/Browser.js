@@ -37,15 +37,21 @@ async function changePage(userid, html = {}, without_temp = false) {
 	const temp_html = new JSDOM(
 		fs.readFileSync(`src/htmls/${page.file_name}`, "utf8")
 	);
+
 	for (const [key, value] of Object.entries(html)) {
-		const [id, attr] = key.split(".");
+		const [id, attr, css] = key.split(".");
 		const el = temp_html.window.document.getElementById(id);
 		if (!el) continue;
 		if (!attr) {
 			el.textContent = value;
 			continue;
 		}
-		el.setAttribute(attr, value);
+
+		if (attr == "css") {
+			el.style[css] = value;
+		} else {
+			el.setAttribute(attr, value);
+		}
 	}
 	let temp_folder = without_temp
 		? `${page.file_name.replace(".html", "")}`
