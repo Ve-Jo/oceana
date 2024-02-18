@@ -1,9 +1,12 @@
 const {
 	SlashCommandBuilder,
 	AttachmentBuilder,
+	ActionRowBuilder,
+	ButtonBuilder,
 	EmbedBuilder,
 } = require("discord.js");
 const User = require("../models/UserModel");
+const main_menu = require("./../game_frames/main_menu.js");
 
 module.exports = {
 	data: new SlashCommandBuilder().setName("game").setDescription("Запуск игры"),
@@ -11,17 +14,14 @@ module.exports = {
 		await interaction.deferReply({ ephemeral: true });
 
 		if (!(await User.findOne({ id: interaction.user.id }))) {
-			return await interaction.editReply({
-				content:
-					"Вы не зарегистрированы в базе данных. Запустите команду `/register`.",
-				ephemeral: true,
-			});
 		}
+		return await main_menu(client, interaction);
 
-		await client.browser.createPage(interaction.user.id, "game.html");
+		/*await client.browser.createPage(interaction.user.id, "game.html");
 		await client.browser.changePage(interaction.user.id, {
 			"user_avatar.src": interaction.user.displayAvatarURL() + "?size=2048",
 			xp_text: Date.now(),
+			"background.css.background-color": "red",
 		});
 
 		let buffer = await client.browser.screenshotPage(
@@ -43,6 +43,6 @@ module.exports = {
 			embeds: [test_embed],
 			files: [attachment],
 			ephemeral: true,
-		});
+		});*/
 	},
 };

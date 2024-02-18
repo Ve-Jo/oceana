@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			@import url("https://fonts.googleapis.com/css2?family=Jost&display=swap");
+		</style>
+	</head>
+	<link rel="stylesheet" type="text/css" href="./global.css" />
+	<style>
+		html * {
+			font-family: "Jost", sans-serif;
+            position: absolute;
+		}
+		#user_avatar {
+			width: 80px;
+			height: 80px;
+		}
+		#logo {
+			font-size: 100px;
+			color: white;
+			text-align: center;
+			position: relative;
+			top: 100px;
+		}
+		#user_text {
+			font-size: 30px;
+			color: white;
+			text-align: center;
+			top: 35px;
+			left: 110px;
+		}
+		#fishing_rod {
+			font-size: 65px;
+			top: 90px;
+			rotate: 35deg;
+			left: 360px;
+		}
+		#game_frame {
+			position: relative;
+			background: linear-gradient(rgb(98, 186, 244), rgb(44, 140, 208));
+		}
+        #play_btn {
+            top: 270px;
+            left: 115px;
+            width: 75px;
+            height: 75px;
+        }
+		#start_btn {
+			font-size: 30px;
+			background-color: rgb(210, 76, 76);
+            top: 300px;
+            left: 140px;
+            height: 90px;
+            width: 200px;
+			border-radius: 20px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+		}
+        #start_btn span {
+            color: rgb(255, 255, 255, 1);
+        }
+        #start_btn_text {
+            top: 295px;
+            left: 205px;
+            font-size: 40px;
+            color: rgb(252, 252, 252);
+        }
+		#credit {
+			font-size: 20px;
+			color: white;
+			text-align: center;
+			vertical-align: bottom;
+		}
+		#discord {
+			height: 50px;
+			top: 35px;
+			right: 15px;
+		}
+        #settings_btn {
+            width: 120px;
+            height: 90px;
+            background-color: rgb(54, 79, 132);
+            border-radius: 25px;
+            top: 300px;
+            left: 350px;
+            font-size: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: brightness(1.5);
+        }
+        #bottom_outline {
+			bottom: 25px;
+            left: 140px;
+			width: 330px;
+			height: 75px;
+            background: linear-gradient(rgb(78, 122, 185), rgb(75, 117, 175));
+			border-radius: 25px 25px 25px 5px;
+		}
+        #creator {
+            width: 50px;
+            height: 50px;
+            border-radius: 20px 20px 20px 5px;
+            top: 12px;
+            left: 20px;
+        }
+        #creator_text {
+            font-size: 20px;
+            color: white;
+            top: 10px;
+            left: 80px;
+        }
+        #support_server_outline {
+            width: 165px;
+            height: 75px;
+            background-color: rgb(103, 166, 244);
+            border-radius: 25px 25px 25px 25px;
+            top: 0px;
+            left: 165px;
+        }
+        #discord_server_icon {
+            width: 50px;
+            height: 50px;
+            left: 175px;
+            top: 11px;
+            border-radius: 15px;
+        }
+        #support_server_text {
+            font-size: 17px;
+            color: rgb(255, 255, 255);
+            top: 12px;
+            left: 235px;
+        }
+        #decoration {
+            filter: blur(5px);
+            font-size: 200px;
+        }
+	</style>
+	<body>
+		<div id="game_frame">
+            <div id="decoration" style="top: -90px; left: -90px; rotate: 90deg;">🌿</div>
+			<img id="user_avatar" src="./sources/vejo.png" />
+			<img id="discord" src="./sources/discord.png" />
+			<div id="user_text">Привет, {name} 👋</div>
+			<div id="fishing_rod">🎣</div>
+			<div id="logo">Oceana</div>
+			<div id="start_btn"><span>Уровень 1</span></div>
+            <span id="start_btn_text">Играть</span>
+            <img id="play_btn" src="./sources/icons/play_btn.png"></img>
+            <div id="settings_btn">🔧</div>
+			<div id="bottom_outline">
+                <img src="./sources/vejo.png" id="creator"></img>
+                <div id="creator_text">Создал<br>@vejoy_</div>
+                <div id="support_server_outline"></div>
+                <img src="./sources/vejo.png" id="discord_server_icon"></img>
+                <div id="support_server_text">Сервер<br>поддержки</div>
+            </div>
+            
+		</div>
+	</body>
+</html>

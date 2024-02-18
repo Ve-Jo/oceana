@@ -1,0 +1,10 @@
+#game_frame {
+	width: 600px;
+	height: 500px;
+}
+#user_avatar {
+	border-radius: 35%;
+	position: absolute;
+	top: 20px;
+	left: 20px;
+}
