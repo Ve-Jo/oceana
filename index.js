@@ -26,6 +26,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
 			if (latest_lang !== interaction.locale) {
 				client.i18n.setLocale(interaction.locale);
 				latest_lang = interaction.locale;
+				console.log("Locale is set to " + interaction.locale);
 			}
 			if (type === "isCommand") {
 				command = client.commands.get(interaction.commandName);
