@@ -19,15 +19,16 @@ module.exports = {
 			{ id: interaction.user.id },
 			{ upsert: true, new: true }
 		);
-		if (!user) {
-			await User.create({ id: interaction.user.id });
-		}
+		return console.log(user);
 		if (user) {
 			return interaction.reply({
 				content:
 					"Вы уже зарегистрированы в базе данных. Можете сразу запустить команду `/game.`",
 				ephemeral: true,
 			});
+		}
+		if (!user) {
+			user = await User.create({ id: interaction.user.id });
 		}
 
 		let models = [Boat, World, Upgrades];
@@ -41,6 +42,7 @@ module.exports = {
 					[`${model.modelName.toLowerCase()}_for_id`]: interaction.user.id,
 				});
 			}
+			console.log(model.modelName);
 			user[`${model.modelName.toLowerCase()}`] = document._id;
 		}
 		await user.save();
