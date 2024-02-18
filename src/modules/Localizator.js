@@ -7,4 +7,5 @@ module.exports = function (client) {
 		register: global,
 		objectNotation: true,
 	});
+	console.log("Localizator is ready");
 };
