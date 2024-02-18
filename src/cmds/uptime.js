@@ -1,4 +1,4 @@
-// и так смотри, короче всё работает пиздато почти но есть нюанс которые ты сам заметишь надеюсь, и еще сделать под ему спец разрешение чтобы хуета не была, пон?
+// ебать мой хуй что я сделал, кринж, короче ты за меня сделаешь это говно а я попробую ему сделать красивый CSS
 
 const { SlashCommandBuilder } = require('discord.js');
 const fs = require('fs');
@@ -9,27 +9,25 @@ module.exports = {
     .setName('uptime')
     .setDescription('Показывает uptime в виде красивой картинки'),
   async execute(client, interaction) {
-    const uptimeData = {
-      uptime: process.uptime(),
-      totalmem: os.totalmem(),
-      freemem: os.freemem(),
-      loadavg: os.loadavg(),
-      cpus: os.cpus(),
-    };
+    const totalmem = (os.totalmem() / 1024 / 1024).toFixed(2); // общий объем памяти в МБ
+    const freemem = (os.freemem() / 1024 / 1024).toFixed(2); // доступный объем памяти в МБ
+    const loadavg = os.loadavg()[0].toFixed(2); // средняя нагрузка за последнюю минуту
+    const cpuModel = os.cpus()[0].model; // модель CPU
 
-    // Загрузка и модификация HTML-шаблона
-    let html = fs.readFileSync("src/htmls/uptime_template.html", "utf8");
+    await interaction.deferReply();
+    await client.browser.createPage(interaction.user.id, "uptime.html");
+    await client.browser.changePage(interaction.user.id, {
+			"TOTAL_MEMORY MB.src":
+				(await interaction.user) + "?size=2048",
+		});
 
-    // Заполнение шаблона данными о системе
-    // (реализуй здесь логику подстановки данных в html) ток нахуя я это написал?
-
-    // Создание страницы и скриншот
     await client.browser.createPage(interaction.user.id);
-    let buffer = await client.browser.screenshotPage(
-      interaction.user.id,
-      html // передаем измененный HTML с данными о системе
+		let buffer = await client.browser.screenshotPage(
+			interaction.user.id,
+			{ x: 9, y: 9, width: 600, height: 900 },
+			100
     );
-    await client.browser.closePage(interaction.user.id);
-    await interaction.reply({ files: [buffer] });
+		/*await client.browser.closePage(interaction.user.id);*/
+		await interaction.editReply({ files: [buffer] });
   },
 };
