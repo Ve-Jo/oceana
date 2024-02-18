@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Uptime</title>
+    <style>
+       body {
+            background-color: #1E1E1E;
+            font-family: 'Arial', sans-serif;
+            color: white;
+            height: 70mm;
+        }
+
+        .banner {
+            margin: 0;
+            width: 90vw;
+            display: flex;
+        }
+        
+        .header {
+            width: 30vw;
+            font-size: 22px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <div class="header">System Uptime Information</div>
+        <div class="header">
+            <div>💻 Total Memory: <span class="value">TOTAL_MEMORY MB</span></div>
+            <div>📻 Free Memory: <span class="value">FREE_MEMORY MB</span></div>
+            <div>💡 Load Average (1m): <span class="value">LOAD_AVG_1</span></div>
+            <div>🔌 CPU Model: <span class="value">CPU_MODEL</span></div>
+        </div>
+    </div>
+</body>
+</html> 
