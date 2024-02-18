@@ -8,6 +8,7 @@
   "license": "ISC",
   "dependencies": {
     "colorthief": "^2.4.0",
+    "colr": "^1.2.2",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.1",
     "fs": "^0.0.1-security",
