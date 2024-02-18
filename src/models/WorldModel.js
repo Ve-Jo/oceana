@@ -42,28 +42,24 @@ const WorldSchema = new mongoose.Schema({
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Fish",
-			autocomplete: true,
 		},
 	],
 	islands: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Island",
-			autocomplete: true,
 		},
 	],
 	threasures: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Threasure",
-			autocomplete: true,
 		},
 	],
 	world_decorations: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "WorldDecoration",
-			autocomplete: true,
 		},
 	],
 });
