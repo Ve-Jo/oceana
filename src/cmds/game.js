@@ -1,48 +1,36 @@
-const {
-	SlashCommandBuilder,
-	AttachmentBuilder,
-	ActionRowBuilder,
-	ButtonBuilder,
-	EmbedBuilder,
-} = require("discord.js");
-const User = require("../models/UserModel");
+const { SlashCommandBuilder, Collection } = require("discord.js");
+
 const main_menu = require("./../game_frames/main_menu.js");
+const game = require("./../game_frames/game.js");
+
+const ActiveCollectors = new Collection();
 
 module.exports = {
 	data: new SlashCommandBuilder().setName("game").setDescription("Запуск игры"),
 	async execute(client, interaction) {
 		await interaction.deferReply({ ephemeral: true });
-
-		if (!(await User.findOne({ id: interaction.user.id }))) {
+		await main_menu(client, interaction);
+		if (ActiveCollectors.has(interaction.user.id)) {
+			ActiveCollectors.get(interaction.user.id).stop();
+			console.log("stopped recent collector from that user");
 		}
-		return await main_menu(client, interaction);
-
-		/*await client.browser.createPage(interaction.user.id, "game.html");
-		await client.browser.changePage(interaction.user.id, {
-			"user_avatar.src": interaction.user.displayAvatarURL() + "?size=2048",
-			xp_text: Date.now(),
-			"background.css.background-color": "red",
+		const collector = interaction.channel.createMessageComponentCollector({
+			filter: (i) => i.user.id === interaction.user.id,
+			time: 10000,
 		});
-
-		let buffer = await client.browser.screenshotPage(
-			interaction.user.id,
-			{ x: 9, y: 9, width: 600, height: 900 },
-			100
-		);
-
-		const attachment = new AttachmentBuilder(buffer, {
-			name: "screenshot.png",
+		ActiveCollectors.set(interaction.user.id, collector);
+		collector.on("collect", async (i) => {
+			await i.deferUpdate();
+			if (i.customId === "game_start") {
+				await game(client, interaction);
+			}
 		});
-
-		let test_embed = new EmbedBuilder()
-			.setTitle("Test")
-			.setImage("attachment://screenshot.png")
-			.setDescription("Test description");
-
-		await interaction.editReply({
-			embeds: [test_embed],
-			files: [attachment],
-			ephemeral: true,
-		});*/
+		collector.on("end", async (collected) => {
+			await interaction.editReply({
+				components: [],
+			});
+			console.log("end");
+			await client.browser.closePage(interaction.user.id);
+		});
 	},
 };
