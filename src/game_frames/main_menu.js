@@ -29,7 +29,10 @@ module.exports = async (client, interaction) => {
 	console.log(user_avatar_colors, user_avatar_colors_rgb);
 
 	await client.browser.changePage(interaction.user.id, {
-		"start_btn.css.background-color": user_avatar_colors_rgb,
+		"start_btn.css.background-color": `#` + user_avatar_colors_rgb,
+		user_text: "Привет, " + interaction.user.username + "👋",
+		"discord_server_icon.src":
+			"https://cdn.discordapp.com/icons/831633575601373274/8b922357fdaeb7b6b7b3f7d05248dd22.png?size=2048",
 	});
 
 	let buffer = await client.browser.screenshotPage(
