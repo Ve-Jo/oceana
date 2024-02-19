@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<style>
-			@import url("https://fonts.googleapis.com/css2?family=Jost&display=swap");
-		</style>
-	</head>
+    <head>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Overpass:ital,wght@0,100..900;1,100..900&display=swap');
+        </style>
+    </head>
 	<link rel="stylesheet" type="text/css" href="./global.css" />
 	<style>
 		html * {
@@ -18,9 +18,12 @@
 		#logo {
 			font-size: 100px;
 			color: white;
+            font-weight: 600;
 			text-align: center;
 			position: relative;
-			top: 100px;
+            top: 100px;
+			left: 100px;
+            width: 400px;
 		}
 		#user_text {
 			font-size: 30px;
@@ -39,16 +42,10 @@
 			position: relative;
 			background: linear-gradient(rgb(98, 186, 244), rgb(44, 140, 208));
 		}
-        #play_btn {
-            top: 270px;
-            left: 115px;
-            width: 75px;
-            height: 75px;
-        }
 		#start_btn {
 			font-size: 30px;
 			background-color: rgb(210, 76, 76);
-            top: 300px;
+            top: 310px;
             left: 140px;
             height: 90px;
             width: 200px;
@@ -61,8 +58,9 @@
             color: rgb(255, 255, 255, 1);
         }
         #start_btn_text {
-            top: 295px;
-            left: 205px;
+            top: 305px;
+            left: 200px;
+            font-weight: bold;
             font-size: 40px;
             color: rgb(252, 252, 252);
         }
@@ -82,7 +80,7 @@
             height: 90px;
             background-color: rgb(54, 79, 132);
             border-radius: 25px;
-            top: 300px;
+            top: 310px;
             left: 350px;
             font-size: 65px;
             display: flex;
@@ -91,12 +89,12 @@
             filter: brightness(1.5);
         }
         #bottom_outline {
-			bottom: 25px;
+			bottom: -60px;
             left: 140px;
 			width: 330px;
-			height: 75px;
-            background: linear-gradient(rgb(78, 122, 185), rgb(75, 117, 175));
-			border-radius: 25px 25px 25px 5px;
+			height: 150px;
+            background: linear-gradient(rgb(78, 122, 185), rgb(23, 70, 137));
+			border-radius: 25px 25px 0px 0px;
 		}
         #creator {
             width: 50px;
@@ -116,25 +114,44 @@
             height: 75px;
             background-color: rgb(103, 166, 244);
             border-radius: 25px 25px 25px 25px;
-            top: 0px;
-            left: 165px;
+            top: 5px;
+            left: 160px;
         }
         #discord_server_icon {
             width: 50px;
             height: 50px;
-            left: 175px;
-            top: 11px;
+            left: 170px;
+            top: 16px;
             border-radius: 15px;
         }
         #support_server_text {
             font-size: 17px;
             color: rgb(255, 255, 255);
-            top: 12px;
-            left: 235px;
+            top: 15px;
+            left: 230px;
         }
         #decoration {
             filter: blur(5px);
             font-size: 200px;
+        }
+        #play_button {
+            width: 75px;
+            height: 75px;
+            background-color: rgb(50, 141, 194);
+            border-radius: 25%;
+            top: 270px;
+            left: 115px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            color: rgb(255, 255, 255);
+        }
+        #playername {
+            background-color: gray;
+            border-radius: 10px;
+            padding: 0px 10px 0px 10px;
+            margin-left: 5px;
         }
 	</style>
 	<body>
@@ -142,12 +159,12 @@
             <div id="decoration" style="top: -90px; left: -90px; rotate: 90deg;">🌿</div>
 			<img id="user_avatar" src="./sources/vejo.png" />
 			<img id="discord" src="./sources/discord.png" />
-			<div id="user_text">Привет, {name} 👋</div>
+			<div id="user_text">👋 Привет, <span id="playername">{name}</span></div>
 			<div id="fishing_rod">🎣</div>
 			<div id="logo">Oceana</div>
 			<div id="start_btn"><span>Уровень 1</span></div>
             <span id="start_btn_text">Играть</span>
-            <img id="play_btn" src="./sources/icons/play_btn.png"></img>
+            <div id="play_button">▶</div>
             <div id="settings_btn">🔧</div>
 			<div id="bottom_outline">
                 <img src="./sources/vejo.png" id="creator"></img>
