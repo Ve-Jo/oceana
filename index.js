@@ -1,13 +1,14 @@
-const { Client, Events, GatewayIntentBits } = require("discord.js");
+const { Client, Events, GatewayIntentBits, Options } = require("discord.js");
 require("dotenv").config();
 
 let latest_lang;
 
 const client = new Client({
 	intents: [GatewayIntentBits.Guilds],
+	sweepers: Options.DefaultSweeperSettings,
 });
 
-client.on(Events.ClientReady, () => {
+client.on(Events.ClientReady, (client) => {
 	console.log("Bot is ready");
 });
 
@@ -49,12 +50,13 @@ process.on("SIGINT", async () => {
 	process.exit(0);
 });
 
-for (const file of [
-	"Browser",
-	"Mongoose",
+const filePromises = [
 	"CommandsHandler",
 	"Slashes",
 	"Localizator",
-]) {
-	await require(`./src/modules/${file}`)(client);
-}
+	"Mongoose",
+	"Browser",
+	"ProcessUsage",
+].map((file) => require(`./src/modules/${file}`)(client));
+
+await Promise.all(filePromises);
