@@ -31,7 +31,7 @@ module.exports = async (client, interaction) => {
 		playername: "@" + interaction.user.username,
 		"playername.css.background-color": `#` + user_avatar_colors_rgb,
 		"discord_server_icon.src":
-			"https://cdn.discordapp.com/icons/831633575601373274/8b922357fdaeb7b6b7b3f7d05248dd22.png?size=2048",
+			"https://cdn.discordapp.com/icons/831633575601373274/bc7372fe90f8e81d9ef271852d082eca.png?size=2048",
 	});
 
 	let buffer = await client.browser.screenshotPage(
@@ -46,7 +46,7 @@ module.exports = async (client, interaction) => {
 
 	let test_embed = new EmbedBuilder()
 		.setImage("attachment://screenshot.png")
-		.setDescription("Welcome to the game!");
+		.setDescription(" ");
 
 	let controls = new ActionRowBuilder().addComponents(
 		new ButtonBuilder().setCustomId("game_start").setEmoji("▶").setStyle(1),
