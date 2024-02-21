@@ -16,6 +16,7 @@ module.exports = function (client) {
 		changePage,
 		closePage,
 	};
+	console.log("Browser module is loaded");
 };
 
 async function startBrowser() {
