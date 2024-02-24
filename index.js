@@ -57,6 +57,7 @@ const filePromises = [
 	"Mongoose",
 	"Browser",
 	"ProcessUsage",
+	"Caching",
 ].map((file) => require(`./src/modules/${file}`)(client));
 
 await Promise.all(filePromises);
