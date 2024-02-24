@@ -5,7 +5,7 @@
             @import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Overpass:ital,wght@0,100..900;1,100..900&display=swap');
         </style>
     </head>
-	<link rel="stylesheet" type="text/css" href="./global.css" />
+	<link rel="stylesheet" type="text/css" href="../global.css" />
 	<style>
 		html * {
 			font-family: "Jost", sans-serif;
@@ -156,22 +156,31 @@
 	</style>
 	<body>
 		<div id="game_frame">
-            <div id="decoration" style="top: -90px; left: -90px; rotate: 90deg;">🌿</div>
-			<img id="user_avatar" src="./sources/vejo.png" />
-			<img id="discord" src="./sources/discord.png" />
-			<div id="user_text">👋 Привет, <span id="playername">{name}</span></div>
-			<div id="fishing_rod">🎣</div>
-			<div id="logo">Oceana</div>
-			<div id="start_btn"><span>Уровень 1</span></div>
-            <span id="start_btn_text">Играть</span>
-            <div id="play_button">▶</div>
-            <div id="settings_btn">🔧</div>
-			<div id="bottom_outline">
-                <img src="./sources/vejo.png" id="creator"></img>
+            <div id="controls">
+                <div id="decoration" style="top: -90px; left: -90px; rotate: 90deg;">🌿</div>
+                <img id="user_avatar" src="../sources/vejo.png" />
+                <img id="discord" src="../sources/discord.png" />
+                <div id="user_text">👋 Привет, <span id="playername">{name}</span></div>
+                <div id="fishing_rod">🎣</div>
+                <div id="logo">Oceana</div>
+                <div id="start_btn"><span>Уровень 1</span></div>
+                <span id="start_btn_text">Играть</span>
+                <div id="play_button">▶</div>
+                <div id="settings_btn">🔧</div>
+            </div>
+
+            <div id="bottom_outline">
+                <img src="../sources/vejo.png" id="creator"></img>
                 <div id="creator_text">Создал<br>@vejoy_</div>
                 <div id="support_server_outline"></div>
-                <img src="./sources/vejo.png" id="discord_server_icon"></img>
+                <img src="../sources/vejo.png" id="discord_server_icon"></img>
                 <div id="support_server_text">Сервер<br>поддержки</div>
+            </div>
+            
+            <div id="settings">
+                <div id="settings_background">
+                    <div>⬅</div>
+                </div>
             </div>
 		</div>
 	</body>
