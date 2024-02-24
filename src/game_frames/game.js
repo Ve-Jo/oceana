@@ -1,7 +1,15 @@
 const { AttachmentBuilder } = require("discord.js");
 
-module.exports = async (client, interaction) => {
-	await client.browser.createPage(interaction.user.id, "game.html");
+module.exports = async ({ client, interaction, collector }) => {
+	console.log(collector);
+
+	/*await client.browser.createPage(interaction.user.id, "./game/game.html");
+
+	await client.browser.changePage(interaction.user.id, {
+		xp_text: "XP: 0!",
+		"user_avatar.src":
+			interaction.user.displayAvatarURL().replace("webp", "png") + "?size=2048",
+	});
 
 	let buffer = await client.browser.screenshotPage(
 		interaction.user.id,
@@ -18,5 +26,5 @@ module.exports = async (client, interaction) => {
 		files: [attachment],
 		components: [],
 		ephemeral: true,
-	});
+	});*/
 };

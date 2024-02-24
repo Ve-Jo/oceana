@@ -3,11 +3,11 @@ const {
 	EmbedBuilder,
 	AttachmentBuilder,
 	ButtonBuilder,
-	ButtonStyle,
 	ActionRowBuilder,
 } = require("discord.js");
+const game = require("./game.js");
 
-module.exports = async (client, interaction) => {
+module.exports = async (client, interaction, collector) => {
 	const rgbToHex = ([r, g, b]) =>
 		[r, g, b]
 			.map((x) => {
@@ -16,7 +16,7 @@ module.exports = async (client, interaction) => {
 			})
 			.join("");
 
-	await client.browser.createPage(interaction.user.id, "menu.html");
+	await client.browser.createPage(interaction.user.id, "./game/menu.html");
 
 	let user_avatar_colors = await ColorThief.getColor(
 		interaction.user.displayAvatarURL().replace("webp", "png")
@@ -30,6 +30,8 @@ module.exports = async (client, interaction) => {
 		"start_btn.css.background-color": `#` + user_avatar_colors_rgb,
 		playername: "@" + interaction.user.username,
 		"playername.css.background-color": `#` + user_avatar_colors_rgb,
+		"user_avatar.src":
+			interaction.user.displayAvatarURL().replace("webp", "png") + "?size=2048",
 		"discord_server_icon.src":
 			"https://cdn.discordapp.com/icons/831633575601373274/bc7372fe90f8e81d9ef271852d082eca.png?size=2048",
 	});
@@ -59,12 +61,18 @@ module.exports = async (client, interaction) => {
 			.setURL("https://discord.gg/ABAb3Y5WcB")
 	);
 
-	console.log(controls, controls2);
-
 	await interaction.editReply({
+		content: "",
 		embeds: [test_embed],
 		files: [attachment],
 		components: [controls, controls2],
 		ephemeral: true,
+	});
+
+	collector.on("collect", async (i) => {
+		await i.deferUpdate();
+		if (i.customId === "game_start") {
+			await game({ client, interaction, collector });
+		}
 	});
 };
