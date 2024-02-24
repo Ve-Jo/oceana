@@ -26,7 +26,7 @@ async function startBrowser() {
 	try {
 		console.time("browser start");
 		browser = await chromium.launch({
-			headless: process.env.BROWSER_HEADLESS,
+			headless: process.env.BROWSER_HEADLESS == "true" ? true : false,
 			args: ["--no-sandbox", "--disable-setuid-sandbox"],
 		});
 		console.timeEnd("browser start");
@@ -63,10 +63,7 @@ async function changePage(userid, html = {}, without_temp = false) {
 	if (without_temp == false && !fs.existsSync(`./src/htmls/temp`)) {
 		fs.mkdirSync(`./src/htmls/temp`);
 	}
-	fs.writeFileSync(
-		`./src/htmls/${temp_folder}.html`,
-		temp_html.serialize().replaceAll("./", ".././")
-	);
+	fs.writeFileSync(`./src/htmls/${temp_folder}.html`, temp_html.serialize());
 	page.file_name = `${temp_folder}.html`;
 	await page.page.goto(`file://` + html_path + "/" + page.file_name);
 	await page.page.waitForLoadState("domcontentloaded");
