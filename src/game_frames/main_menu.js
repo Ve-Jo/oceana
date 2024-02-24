@@ -1,4 +1,3 @@
-const ColorThief = require("colorthief");
 const {
 	EmbedBuilder,
 	AttachmentBuilder,
@@ -6,6 +5,7 @@ const {
 	ActionRowBuilder,
 } = require("discord.js");
 const game = require("./game.js");
+const ColorThief = require("../modules/ColorThief.js");
 
 module.exports = async (client, interaction, collector) => {
 	const rgbToHex = ([r, g, b]) =>
@@ -18,13 +18,11 @@ module.exports = async (client, interaction, collector) => {
 
 	await client.browser.createPage(interaction.user.id, "./game/menu.html");
 
-	let user_avatar_colors = await ColorThief.getColor(
-		interaction.user.displayAvatarURL().replace("webp", "png")
+	let user_avatar_colors_rgb = await ColorThief.closer_color(
+		interaction.user.displayAvatarURL().replace("webp", "png") + "?size=2048"
 	);
 
-	console.log(user_avatar_colors);
-
-	let user_avatar_colors_rgb = rgbToHex(await user_avatar_colors);
+	console.log(await user_avatar_colors_rgb);
 
 	await client.browser.changePage(interaction.user.id, {
 		"start_btn.css.background-color": `#` + user_avatar_colors_rgb,
@@ -48,7 +46,13 @@ module.exports = async (client, interaction, collector) => {
 
 	let test_embed = new EmbedBuilder()
 		.setImage("attachment://screenshot.png")
-		.setDescription(" ");
+		.setDescription(" ")
+		.setColor(
+			"#" +
+				(await ColorThief.closer_color(
+					client.user.displayAvatarURL().replace("webp", "png")
+				))
+		);
 
 	let controls = new ActionRowBuilder().addComponents(
 		new ButtonBuilder().setCustomId("game_start").setEmoji("▶").setStyle(1),
