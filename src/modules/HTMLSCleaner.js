@@ -1,8 +1,9 @@
-const fs = require('fs')
+const fs = require("fs");
 
 module.exports = function () {
-    const temp_htmls = fs.readdirSync("src/htmls/temp");
-    for (const file of temp_htmls) {
-        fs.unlinkSync(`src/htmls/temp/${file}`);
-    }
-}
+	const temp_htmls = fs.readdirSync("src/htmls/temp");
+	for (const file of temp_htmls) {
+		fs.unlinkSync(`src/htmls/temp/${file}`);
+	}
+	fs.unlinkSync(process.env.CACHE_PATH);
+};
