@@ -15,6 +15,9 @@ module.exports = function (client) {
 		screenshotPage,
 		changePage,
 		closePage,
+		status: () => {
+			return browser !== false;
+		},
 	};
 	console.log("Browser module is loaded");
 };
@@ -23,7 +26,7 @@ async function startBrowser() {
 	try {
 		console.time("browser start");
 		browser = await chromium.launch({
-			headless: true,
+			headless: false,
 			args: ["--no-sandbox", "--disable-setuid-sandbox"],
 		});
 		console.timeEnd("browser start");
@@ -72,16 +75,12 @@ async function changePage(userid, html = {}, without_temp = false) {
 async function createPage(userid, html_name) {
 	if (browser == false) await startBrowser();
 	try {
-		if (pages[userid] && pages[userid].file_name != html_name) {
-			await pages[userid].page.close();
-			delete pages[userid];
-		}
-		if (!pages[userid]) {
-			const page = await browser.newPage({ deviceScaleFactor: 2 });
-			await page.goto(`file://${path.join(html_path, html_name)}`);
-			await page.waitForLoadState("domcontentloaded");
-			pages[userid] = { file_name: html_name, page: page };
-		}
+		let page_link = `file://${path.join(html_path, html_name)}`;
+		let current_page =
+			pages[userid]?.page || (await browser.newPage({ deviceScaleFactor: 2 }));
+		await current_page.goto(page_link);
+		await current_page.waitForLoadState("domcontentloaded");
+		pages[userid] = { file_name: html_name, page: current_page };
 	} catch (error) {
 		console.error("An error occurred:", error);
 	}
@@ -115,14 +114,18 @@ async function screenshotPage(
 async function closePage(userid) {
 	try {
 		const page = pages[userid];
-		await page.page.close();
-		if (page.file_name.startsWith("temp/")) {
-			let delete_path = `./src/htmls/${page.file_name}`;
-			if (fs.existsSync(delete_path)) {
-				fs.unlinkSync(delete_path);
+		if (page !== undefined && page.page) {
+			await page.page.close();
+			if (page.file_name.startsWith("temp/")) {
+				let delete_path = `./src/htmls/${page.file_name}`;
+				if (fs.existsSync(delete_path)) {
+					fs.unlinkSync(delete_path);
+				}
 			}
+			delete pages[userid];
+		} else {
+			console.log("Page does not exist for userId: " + userid);
 		}
-		delete pages[userid];
 		if (!Object.keys(pages).length) {
 			await browser.close();
 			browser = false;
