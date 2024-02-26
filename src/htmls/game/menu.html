@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Overpass:ital,wght@0,100..900;1,100..900&display=swap');
-        </style>
-    </head>
 	<link rel="stylesheet" type="text/css" href="../global.css" />
+    <head>
+        <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
+    </head>
 	<style>
 		html * {
-			font-family: "Jost", sans-serif;
+			font-family: "Jost";
             position: absolute;
 		}
 		#user_avatar {
@@ -30,13 +28,13 @@
 			color: white;
 			text-align: center;
 			top: 35px;
-			left: 110px;
+			left: 150px;
 		}
-		#fishing_rod {
-			font-size: 65px;
-			top: 90px;
+		#fishing_rod img {
+            width: 50px;
+			top: 115px;
 			rotate: 35deg;
-			left: 360px;
+			left: 370px;
 		}
 		#game_frame {
 			position: relative;
@@ -45,8 +43,8 @@
 		#start_btn {
 			font-size: 30px;
 			background-color: rgb(210, 76, 76);
-            top: 310px;
-            left: 140px;
+            top: 350px;
+            left: 210px;
             height: 90px;
             width: 200px;
 			border-radius: 20px;
@@ -58,8 +56,8 @@
             color: rgb(255, 255, 255, 1);
         }
         #start_btn_text {
-            top: 305px;
-            left: 200px;
+            top: 345px;
+            left: 270px;
             font-weight: bold;
             font-size: 40px;
             color: rgb(252, 252, 252);
@@ -73,25 +71,12 @@
 		#discord {
 			height: 50px;
 			top: 35px;
-			right: 15px;
+			left: 500px;
 		}
-        #settings_btn {
-            width: 120px;
-            height: 90px;
-            background-color: rgb(54, 79, 132);
-            border-radius: 25px;
-            top: 310px;
-            left: 350px;
-            font-size: 65px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            filter: brightness(1.5);
-        }
         #bottom_outline {
-			bottom: -60px;
-            left: 140px;
-			width: 330px;
+			bottom: -70px;
+            left: 220px;
+			width: 180px;
 			height: 150px;
             background: linear-gradient(rgb(78, 122, 185), rgb(23, 70, 137));
 			border-radius: 25px 25px 0px 0px;
@@ -114,38 +99,49 @@
             height: 75px;
             background-color: rgb(103, 166, 244);
             border-radius: 25px 25px 25px 25px;
-            top: 5px;
-            left: 160px;
+            top: 365px;
+            left: 420px;
+        }
+        #support_booster {
+            font-size: 12px;
+            color: white;
+            background-color: rgb(162, 191, 255);
+            border-radius: 10px;
+            width: 135px;
+            padding: 20px 5px 5px 5px;
+            top: 422px;
+            left: 430px;
+        }
+        #support_booster_emoji img {
+            width: 22px;
+            height: 22px;
+            left: 547px;
+            top: 295px;
+            border-radius: 15px;
         }
         #discord_server_icon {
             width: 50px;
             height: 50px;
-            left: 170px;
-            top: 16px;
+            left: 430px;
+            top: 376px;
             border-radius: 15px;
         }
         #support_server_text {
             font-size: 17px;
             color: rgb(255, 255, 255);
-            top: 15px;
-            left: 230px;
+            top: 375px;
+            left: 487px;
         }
         #decoration {
             filter: blur(5px);
             font-size: 200px;
         }
-        #play_button {
-            width: 75px;
-            height: 75px;
-            background-color: rgb(50, 141, 194);
-            border-radius: 25%;
-            top: 270px;
-            left: 115px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 50px;
-            color: rgb(255, 255, 255);
+        #play_button img {
+            width: 70px;
+            height: 70px;
+            top: 175px;
+            left: 190px;
+            border-radius: 20px;
         }
         #playername {
             background-color: gray;
@@ -153,35 +149,115 @@
             padding: 0px 10px 0px 10px;
             margin-left: 5px;
         }
+        #settings_outline {
+            width: 180px;
+            height: 70px;
+            background-color: rgb(103, 166, 244);
+            border-radius: 25px;
+            top: 370px;
+            left: 20px;
+            font-size: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #settings_btn img {
+            top: 230px;
+            left: 135px;
+            width: 50px;
+            height: 50px;
+            padding: 5px;
+            background-color: rgb(66, 154, 255);
+            border-radius: 20px;
+            color: white;
+        }
+        #settings_btn_text {
+            font-size: 20px;
+            color: white;
+            top: 390px;
+            left: 30px;
+        }
+        #version {
+            font-size: 20px;
+            background-color: white;
+            border-radius: 10px;
+            font-weight: bold;
+            padding: 0px 10px 0px 10px;
+            top: 220px;
+            left: 400px
+        }
+        #uptimed {
+            font-size: 20px;
+            background-color: white;
+            border-radius: 10px;
+            font-weight: bold;
+            padding: 0px 10px 0px 25px;
+            top: 220px;
+            left: 135px
+        }
+        #creator_text {
+            font-size: 20px;
+            color: rgb(69, 159, 255);
+            top: 450px;
+            left: 20px;
+        }
+        #emoji1 img {
+            height: 30px;
+            width: 30px;
+        }
 	</style>
 	<body>
 		<div id="game_frame">
-            <div id="controls">
-                <div id="decoration" style="top: -90px; left: -90px; rotate: 90deg;">🌿</div>
-                <img id="user_avatar" src="../sources/vejo.png" />
-                <img id="discord" src="../sources/discord.png" />
-                <div id="user_text">👋 Привет, <span id="playername">{name}</span></div>
-                <div id="fishing_rod">🎣</div>
-                <div id="logo">Oceana</div>
-                <div id="start_btn"><span>Уровень 1</span></div>
-                <span id="start_btn_text">Играть</span>
-                <div id="play_button">▶</div>
-                <div id="settings_btn">🔧</div>
-            </div>
+            <div id="decoration" style="top: -90px; left: -90px; rotate: 90deg;">🌿</div>
+            <img id="user_avatar" src="../sources/vejo.png"/>
 
-            <div id="bottom_outline">
-                <img src="../sources/vejo.png" id="creator"></img>
-                <div id="creator_text">Создал<br>@vejoy_</div>
+            <div id="controls">
+                <img id="discord" src="../sources/discord.png"/>
+                <div id="emoji1" style="left: 110px; top: 40px;">👋</div>
+                <div id="user_text">Привет, <span id="playername">{name}</span></div>
+                <div id="fishing_rod">🎣</div>
+                <div id="version">0.0.1</div>
+                <div id="uptimed">1h 20m 30s</div>
+                <div id="emoji1", style="top: 210px; left: 125px;">🟢</div>
+                <div id="logo">Oceana</div>
+
+                <div id="support_booster">10% к опыту за вход</div>
                 <div id="support_server_outline"></div>
                 <img src="../sources/vejo.png" id="discord_server_icon"></img>
                 <div id="support_server_text">Сервер<br>поддержки</div>
+                <div id="support_booster_emoji">❌</div>
+
+                <div id="settings_outline"></div>
+                <div id="settings_btn">⚙️</div>
+                <div id="settings_btn_text">Настройки</div>
+
+                <div id="start_btn"><span>Уровень 1</span></div>
+                <span id="start_btn_text">Играть</span>
+                <div id="play_button">▶</div>
+
+                <div id="creator_text">Сделано с любовью, @vejoy_</div>
             </div>
+
+            <!--<div id="bottom_outline">
+                <img src="../sources/vejo.png" id="creator"></img>
+                <div id="creator_text">Создал<br>@vejoy_</div>
+            </div>-->
             
-            <div id="settings">
-                <div id="settings_background">
-                    <div>⬅</div>
+            <!--<div id="settings" style="visibility: hidden;">
+                <div id="comeback_emoji">⬅</div>
+                <div id="uptime">Последний перезапуск бота</br>1H</div>
+                <div id="settings_panel">
+                    <div id="selected_language">
+                        <img src="https://em-content.zobj.net/source/twitter/376/flag-ukraine_1f1fa-1f1e6.png"> <div id="selected_language_text">Язык вашего клиента Discord</div>
+                    </div>
                 </div>
-            </div>
+            </div>-->
 		</div>
 	</body>
+    <script>
+	    twemoji.parse(document.body, {
+            folder: 'svg',
+            ext: '.svg'
+        })
+    </script>
 </html>
