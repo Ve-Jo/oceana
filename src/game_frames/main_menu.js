@@ -11,7 +11,7 @@ import prettyMilliseconds from "pretty-ms";
 import User from "./../models/UserModel";
 
 export default async (client, interaction, collector) => {
-	await client.browser.createPage(interaction.user.id, "./game/menu.html");
+	await client.browser.createPage(interaction.user.id, "./game/main_menu.html");
 
 	let user_avatar_colors_rgb = await ColorThief.closer_color(
 		interaction.user.displayAvatarURL().replace("webp", "png") + "?size=2048"
@@ -33,12 +33,24 @@ export default async (client, interaction, collector) => {
 		uptimed: prettyMilliseconds(client.uptime),
 		version: process.env.VISIBLE_VERSION,
 		level_text: `Уровень: ${user_level}`,
+
 		/*support_booster_emoji: client.guilds.cache
 			.get(process.env.SUPPORT_SERVER_ID)
 			.users.cache.get(`${interaction.user.id}`)
 			? "✅"
 			: "❌", DOESNT WORK, NEED AN INTENT*/
 	});
+
+	await client.browser.alignLocalization(
+		interaction.user.id,
+		{
+			user_text: interaction.user.username,
+			support_booster: "10%",
+			level_text: user_level,
+			creator_text: "@vejoy",
+		},
+		interaction.locale
+	);
 
 	let buffer = await client.browser.screenshotPage(
 		interaction.user.id,
@@ -80,8 +92,8 @@ export default async (client, interaction, collector) => {
 	});
 
 	collector.on("collect", async (i) => {
-		await i.deferUpdate();
 		if (i.customId === "game_start") {
+			await i.deferUpdate();
 			if (await User.exists({ id: interaction.user.id })) {
 				await game(client, interaction, collector);
 			} else {
@@ -89,6 +101,7 @@ export default async (client, interaction, collector) => {
 			}
 		}
 		if (i.customId === "game_settings") {
+			await i.deferUpdate();
 			await client.browser.changePage(interaction.user.id, {
 				"controls.css.visibility": "hidden",
 				"settings.css.visibility": "none",
