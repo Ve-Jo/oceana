@@ -1,5 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Overpass:ital,wght@0,100..900;1,100..900&display=swap");
 
+* {
+	font-family: "Jost", sans-serif;
+}
+
 #game_frame {
 	width: 600px;
 	height: 500px;
