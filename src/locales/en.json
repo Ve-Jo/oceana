@@ -1,3 +1,11 @@
 {
-	"test": "Test message"
+	"main_menu": {
+		"user_text": "Hello, %s",
+		"start_btn_text": "Play",
+		"support_server_text": "Support server",
+		"support_booster": "%s to experience for login",
+		"settings_btn_text": "Settings",
+		"level_text": "Level %s",
+		"creator_text": "Made with love, %s"
+	}
 }

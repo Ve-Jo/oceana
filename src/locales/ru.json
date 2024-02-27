@@ -1,3 +1,23 @@
 {
-	"test": "Тестовое сообщение"
+	"main_menu": {
+		"user_text": "Привет, %s",
+		"start_btn_text": "Играть",
+		"support_server_text": "Сервер поддержки",
+		"support_booster": "%s к опыту за вход",
+		"settings_btn_text": "Настройки",
+		"level_text": "Уровень %s",
+		"creator_text": "Сделано с любовью, %s"
+	},
+	"Hello, %s": "Hello, %s",
+	"%s to experience for login": "%s to experience for login",
+	"Level %s": "Level %s",
+	"Made with love, %s": "Made with love, %s",
+	"Привіт, %s": "Привіт, %s",
+	"%s до досвіду за вхід": "%s до досвіду за вхід",
+	"Рівень %s": "Рівень %s",
+	"Зроблено з любов'ю, %s": "Зроблено з любов'ю, %s",
+	"Привет, %s": "Привет, %s",
+	"%s к опыту за вход": "%s к опыту за вход",
+	"Уровень %s": "Уровень %s",
+	"Сделано с любовью, %s": "Сделано с любовью, %s"
 }
