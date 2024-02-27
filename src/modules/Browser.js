@@ -2,8 +2,9 @@ import { chromium } from "playwright";
 import path from "path";
 import { JSDOM } from "jsdom";
 import fs from "fs";
+import { i18n } from "./Localizator.js";
 const pages = {
-	//user-id: { file_name: name, page: page }
+	//user-id: { file_name: name, original_file_name: name, page: page, is_temp: true/false }
 };
 let browser = false;
 
@@ -15,6 +16,7 @@ export default function (client) {
 		screenshotPage,
 		changePage,
 		closePage,
+		alignLocalization,
 		status: () => {
 			return browser !== false;
 		},
@@ -66,7 +68,45 @@ async function changePage(userid, html = {}, without_temp = false) {
 	fs.writeFileSync(`./src/htmls/${temp_folder}.html`, temp_html.serialize());
 	page.file_name = `${temp_folder}.html`;
 	await page.page.goto(`file://` + html_path + "/" + page.file_name);
+	if (!without_temp) {
+		page.is_temp = true;
+	}
 	await page.page.waitForLoadState("domcontentloaded");
+}
+
+async function alignLocalization(userid, locales = {}, locale) {
+	console.log("123");
+	if (!pages[userid]) return;
+	const page = pages[userid];
+	if (page.is_temp) {
+		const locale_file = fs.readFileSync(
+			`./src/locales/${locale.split("-")[0]}.json`,
+			"utf8"
+		);
+		let locale_path = page.original_file_name
+			.replace(".html", "")
+			.replace("./game/", "");
+		const temp_html = new JSDOM(
+			fs.readFileSync(`src/htmls/${page.file_name}`, "utf8")
+		);
+		i18n.setLocale(locale);
+		const locale_json = JSON.parse(locale_file)[locale_path];
+		for (const [key, value] of Object.entries(locale_json)) {
+			console.log(key, value);
+			const el = temp_html.window.document.getElementById(key);
+			if (!el) continue;
+			console.log(`+ ${key}: `);
+			let ready_text = value;
+			if (locales[key]) {
+				ready_text = i18n.__(ready_text, locales[key]);
+			}
+			el.textContent = ready_text;
+		}
+
+		fs.writeFileSync(`./src/htmls/${page.file_name}`, temp_html.serialize());
+		await page.page.goto(`file://` + html_path + "/" + page.file_name);
+		await page.page.waitForLoadState("domcontentloaded");
+	}
 }
 
 async function createPage(userid, html_name) {
@@ -77,7 +117,12 @@ async function createPage(userid, html_name) {
 			pages[userid]?.page || (await browser.newPage({ deviceScaleFactor: 2 }));
 		await current_page.goto(page_link);
 		await current_page.waitForLoadState("domcontentloaded");
-		pages[userid] = { file_name: html_name, page: current_page };
+		pages[userid] = {
+			file_name: html_name,
+			original_file_name: html_name,
+			page: current_page,
+			is_temp: false,
+		};
 	} catch (error) {
 		console.error("An error occurred:", error);
 	}
