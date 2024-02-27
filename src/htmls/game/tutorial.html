@@ -1,0 +1,95 @@
+<!--im making tutorial screen, wheres fill the emoji of the boat, where i need to write my own name for boat-->
+
+<!DOCTYPE html>
+<html>
+	<link rel="stylesheet" type="text/css" href="../global.css" />
+	<head>
+		<script
+			src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<style>
+		#game_frame {
+			position: relative;
+			width: 500px;
+			height: 500px;
+		}
+		#welcome_text {
+			color: white;
+			font-size: 35px;
+			padding: 0px 0px 0px 100px;
+		}
+		#header {
+			width: 500px;
+			height: 100px;
+			background-color: rgb(30, 87, 153);
+			border-radius: 0px 0px 30px 30px;
+		}
+		#user_avatar {
+			width: 80px;
+			height: 80px;
+			position: absolute;
+			top: 10px;
+			left: 10px;
+		}
+		#tutorial {
+			width: 500px;
+			height: 400px;
+			background-color: rgb(144, 186, 255);
+			border-radius: 30px 30px 0px 0px;
+			position: absolute;
+			top: 100px;
+		}
+		#tutorial img {
+			height: 125px;
+			position: absolute;
+			top: 125px;
+			left: 225px;
+		}
+		#boat_outline {
+			width: 200px;
+			height: 30px;
+			position: absolute;
+			background-color: rgb(30, 87, 153);
+			border-radius: 20px;
+			top: 300px;
+			left: 150px;
+		}
+		#boat_outline span {
+			padding: 10px;
+			color: white;
+			font-size: 20px;
+		}
+		#next_btn {
+			width: 100px;
+			height: 30px;
+			position: absolute;
+			top: 350px;
+			left: 200px;
+		}
+		#boat_name, #next_btn {
+			border-radius: 10px;
+			border: none;
+			background-color: rgb(30, 87, 153);
+			color: rgb(255, 255, 255);
+		}
+		#name_question {
+			font-size: 25px;
+			position: relative;
+			left: 50px;
+			top: 50px;
+			color: white;
+		}
+	</style>
+	<div id="game_frame">
+        <img src="../sources/vejo.png" id="user_avatar"></img>
+		<div id="header"><span id="welcome_text">Начало обучения</span></div>
+		<div id="tutorial">
+			<div id="name_question">Как назовём ваш первый корабль?</div>
+			<img src="../sources/icons/boat.png"></img>
+			<div id="boat_outline"><span id="boat_text">. . .</span></div>
+			<button id="next_btn">Далее</button>
+		</div>	
+	</div>
+</html>

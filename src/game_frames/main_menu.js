@@ -1,21 +1,16 @@
-const {
+import {
 	EmbedBuilder,
 	AttachmentBuilder,
 	ButtonBuilder,
 	ActionRowBuilder,
-} = require("discord.js");
-const game = require("./game.js");
-const ColorThief = require("../modules/ColorThief.js");
+} from "discord.js";
+import game from "./game.js";
+import tutorial from "./tutorial.js";
+import ColorThief from "../modules/ColorThief.js";
+import prettyMilliseconds from "pretty-ms";
+import User from "./../models/UserModel";
 
-module.exports = async (client, interaction, collector) => {
-	const rgbToHex = ([r, g, b]) =>
-		[r, g, b]
-			.map((x) => {
-				const hex = x.toString(16);
-				return hex.length === 1 ? "0" + hex : hex;
-			})
-			.join("");
-
+export default async (client, interaction, collector) => {
 	await client.browser.createPage(interaction.user.id, "./game/menu.html");
 
 	let user_avatar_colors_rgb = await ColorThief.closer_color(
@@ -24,6 +19,9 @@ module.exports = async (client, interaction, collector) => {
 
 	console.log(await user_avatar_colors_rgb);
 
+	let user = await User.findOne({ id: interaction.user.id });
+	console.log(user);
+	let user_level = user ? user.level : "0";
 	await client.browser.changePage(interaction.user.id, {
 		"start_btn.css.background-color": `#` + user_avatar_colors_rgb,
 		playername: "@" + interaction.user.username,
@@ -32,6 +30,14 @@ module.exports = async (client, interaction, collector) => {
 			interaction.user.displayAvatarURL().replace("webp", "png") + "?size=2048",
 		"discord_server_icon.src":
 			"https://cdn.discordapp.com/icons/831633575601373274/bc7372fe90f8e81d9ef271852d082eca.png?size=2048",
+		uptimed: prettyMilliseconds(client.uptime),
+		version: process.env.VISIBLE_VERSION,
+		level_text: `Уровень: ${user_level}`,
+		/*support_booster_emoji: client.guilds.cache
+			.get(process.env.SUPPORT_SERVER_ID)
+			.users.cache.get(`${interaction.user.id}`)
+			? "✅"
+			: "❌", DOESNT WORK, NEED AN INTENT*/
 	});
 
 	let buffer = await client.browser.screenshotPage(
@@ -76,7 +82,29 @@ module.exports = async (client, interaction, collector) => {
 	collector.on("collect", async (i) => {
 		await i.deferUpdate();
 		if (i.customId === "game_start") {
-			await game({ client, interaction, collector });
+			if (await User.exists({ id: interaction.user.id })) {
+				await game(client, interaction, collector);
+			} else {
+				await tutorial(client, interaction, collector);
+			}
+		}
+		if (i.customId === "game_settings") {
+			await client.browser.changePage(interaction.user.id, {
+				"controls.css.visibility": "hidden",
+				"settings.css.visibility": "none",
+			});
+			let buffer = await client.browser.screenshotPage(
+				interaction.user.id,
+				{ x: 8, y: 8, width: 600, height: 500 },
+				100
+			);
+
+			const attachment = new AttachmentBuilder(buffer, {
+				name: "screenshot.png",
+			});
+			await interaction.editReply({
+				files: [attachment],
+			});
 		}
 	});
 };
