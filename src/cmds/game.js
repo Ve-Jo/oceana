@@ -1,7 +1,8 @@
-const { SlashCommandBuilder, Collection } = require("discord.js");
-const main_menu = require("../game_frames/main_menu.js");
-const game_collector = require("../game_frames/collectors/game_collector.js");
-module.exports = {
+import { SlashCommandBuilder, Collection } from "discord.js";
+import main_menu from "../game_frames/main_menu.js";
+import game_collector from "../game_frames/collectors/game_collector.js";
+
+export default {
 	data: new SlashCommandBuilder().setName("game").setDescription("Запуск игры"),
 	async execute({ client, interaction }) {
 		await interaction.deferReply();

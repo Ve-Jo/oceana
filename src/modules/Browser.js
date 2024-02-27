@@ -1,7 +1,7 @@
-const { chromium } = require("playwright");
-const path = require("path");
-const { JSDOM } = require("jsdom");
-const fs = require("fs");
+import { chromium } from "playwright";
+import path from "path";
+import { JSDOM } from "jsdom";
+import fs from "fs";
 const pages = {
 	//user-id: { file_name: name, page: page }
 };
@@ -9,7 +9,7 @@ let browser = false;
 
 const html_path = path.resolve(import.meta.dir, "../htmls");
 
-module.exports = function (client) {
+export default function (client) {
 	client.browser = {
 		createPage,
 		screenshotPage,
@@ -20,7 +20,7 @@ module.exports = function (client) {
 		},
 	};
 	console.log("Browser module is loaded");
-};
+}
 
 async function startBrowser() {
 	try {

@@ -1,8 +1,8 @@
-const fs = require("fs");
+import fs from "fs";
 
 let cacheObj = { colorthief: {} };
 
-module.exports = () => {
+export default () => {
 	const temp_file_path = "./temp.json";
 	try {
 		if (!fs.existsSync(temp_file_path)) {

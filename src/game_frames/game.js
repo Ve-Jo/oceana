@@ -1,6 +1,6 @@
-const { AttachmentBuilder } = require("discord.js");
+import { AttachmentBuilder } from "discord.js";
 
-module.exports = async ({ client, interaction, collector }) => {
+export default async ({ client, interaction, collector }) => {
 	console.log(collector);
 
 	/*await client.browser.createPage(interaction.user.id, "./game/game.html");

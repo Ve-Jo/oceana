@@ -1,7 +1,7 @@
-const { Collection } = require("discord.js");
+import { Collection } from "discord.js";
 const ActiveCollectors = new Collection();
 
-module.exports = async ({ client, interaction }) => {
+export default async ({ client, interaction }) => {
 	if (ActiveCollectors.has(interaction.user.id)) {
 		ActiveCollectors.get(interaction.user.id).stop();
 		await interaction.editReply({

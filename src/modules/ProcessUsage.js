@@ -1,7 +1,7 @@
-const asciichart = require("asciichart");
+import asciichart from "asciichart";
 let current_ram_usage = new Array(50).fill(0);
 
-module.exports = async function (client) {
+export default async function (client) {
 	setInterval(() => {
 		const delta_memory = getMemoryDifference();
 		if (Math.abs(delta_memory) > 1) {
@@ -15,7 +15,7 @@ module.exports = async function (client) {
 			);
 		}
 	}, 1000);
-};
+}
 
 function getMemoryDifference() {
 	current_ram_usage.shift();

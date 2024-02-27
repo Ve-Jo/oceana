@@ -1,8 +1,10 @@
-const { Collection } = require("discord.js");
-const fs = require("fs");
-const path = require("path");
+import { Collection } from "discord.js";
+import fs from "fs";
+import path from "path";
 
-module.exports = function (client) {
+import slashes from "./Slashes";
+
+export default async function (client) {
 	client.commands = new Collection();
 
 	const commandsPath = path.resolve(import.meta.dir, "../", "cmds");
@@ -12,9 +14,11 @@ module.exports = function (client) {
 		.filter((file) => file.endsWith(".js"));
 
 	for (const file of commandFiles) {
-		const command = require(path.join(commandsPath, file));
-		console.log(`COMMAND ${command.data.name} is loaded`);
-		command.data.dm_permission = false;
-		client.commands.set(command.data.name, command);
+		const command = await import(commandsPath + "/" + file);
+		console.log(`COMMAND ${command.default.data.name} is loaded`);
+		command.default.data.dm_permission = false;
+		client.commands.set(command.default.data.name, command.default);
 	}
-};
+
+	slashes(client);
+}

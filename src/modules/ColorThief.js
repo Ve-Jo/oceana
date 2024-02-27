@@ -1,7 +1,7 @@
-const ColorThief = require("colorthief");
-const fs = require("fs");
+import ColorThief from "colorthief";
+import fs from "fs";
 
-module.exports = {
+export default {
 	closer_color: async function (url) {
 		const rgbToHex = ([r, g, b]) =>
 			[r, g, b]

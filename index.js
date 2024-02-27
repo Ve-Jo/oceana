@@ -1,4 +1,4 @@
-const { Client, Events, GatewayIntentBits, Options } = require("discord.js");
+import { Client, Events, GatewayIntentBits, Options } from "discord.js";
 require("dotenv").config();
 
 let latest_lang;
@@ -46,18 +46,21 @@ client.on(Events.InteractionCreate, async (interaction) => {
 client.login(process.env.TOKEN);
 
 process.on("SIGINT", async () => {
-	await require("./src/modules/HTMLSCleaner")();
+	const html_cleaner = await import("./src/modules/HTMLSCleaner");
+	html_cleaner.default();
 	process.exit(0);
 });
 
 const filePromises = [
 	"CommandsHandler",
-	"Slashes",
 	"Localizator",
 	"Mongoose",
 	"Browser",
 	"ProcessUsage",
 	"Caching",
-].map((file) => require(`./src/modules/${file}`)(client));
+].map(async (file) => {
+	const module = await import(`./src/modules/${file}`);
+	return module.default(client);
+});
 
 await Promise.all(filePromises);

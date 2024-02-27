@@ -1,11 +1,11 @@
-const { SlashCommandBuilder, AttachmentBuilder } = require("discord.js");
-const os = require("os");
+import { SlashCommandBuilder, AttachmentBuilder } from "discord.js";
+import os from "os";
 
-module.exports = {
+export default {
 	data: new SlashCommandBuilder()
 		.setName("uptime")
 		.setDescription("Показывает uptime в виде красивой картинки"),
-	async execute(client, interaction) {
+	async execute({ client, interaction }) {
 		const uptime = (process.uptime() / 60).toFixed(2); // время работы в минутах
 		const totalmem = (os.totalmem() / 1024 / 1024).toFixed(2); // общий объем памяти в МБ
 		const freemem = (os.freemem() / 1024 / 1024).toFixed(2); // доступный объем памяти в МБ

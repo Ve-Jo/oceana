@@ -1,6 +1,6 @@
-const { REST, Routes } = require("discord.js");
+import { REST, Routes } from "discord.js";
 
-module.exports = function (client) {
+export default function (client) {
 	const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 	(async () => {
 		try {
@@ -11,4 +11,4 @@ module.exports = function (client) {
 			console.error(error);
 		}
 	})();
-};
+}
