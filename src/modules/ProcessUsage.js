@@ -6,7 +6,11 @@ export default async function (client) {
 		const delta_memory = getMemoryDifference();
 		if (Math.abs(delta_memory) > 1) {
 			console.log("RAM usage has changed.");
-			console.log(`Delta Memory: ${delta_memory} MB`);
+			console.log(
+				`Delta Memory: ${delta_memory.toFixed(2)} MB (${current_ram_usage[
+					current_ram_usage.length - 1
+				].toFixed(2)} MB)`
+			);
 			console.log(
 				asciichart.plot([current_ram_usage], {
 					height: 10,
