@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<link rel="stylesheet" type="text/css" href="../global.css" />
+	<head>
+		<script
+			src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<style>
+		html * {
+			font-family: "Jost";
+			position: absolute;
+		}
+		#user_avatar {
+			width: 80px;
+			height: 80px;
+		}
+		#game_frame {
+			position: relative;
+			background: rgb(146, 211, 255);
+		}
+		#boat {
+			height: 120px;
+			top: 195px;
+			left: 250px;
+		}
+		#dialogue_outline {
+			position: absolute;
+			top: 420px;
+			left: 50px;
+			width: 500px;
+			height: 100px;
+			background-color: rgb(118, 66, 35);
+			border-radius: 20px;
+		}
+		#fisherman {
+			position: absolute;
+			height: 100px;
+			top: 380px;
+			left: 65px;
+			padding: 10px;
+			background-color: rgb(162, 92, 52);
+			border-radius: 20px;
+			image-rendering: pixelated;
+		}
+		#dialogue_text {
+			color: white;
+			font-size: 15px;
+			padding-left: 130px;
+		}
+		#dialogue_contol {
+			position: absolute;
+			top: 380px;
+			left: 430px;
+			width: 100px;
+			height: 35px;
+			color: white;
+			padding: 10px;
+			background-color: rgb(147, 82, 45);
+			border-radius: 20px;
+		}
+	</style>
+	<body>
+		<div id="game_frame">
+			<img id="user_avatar" src="../sources/vejo.png" />
+			<img id="boat" src="../sources/icons/boat.png" />
+			<div id="dialogue_outline">
+				<p id="dialogue_text">
+					Приветствую тебя! Давай я быстренько обучу тебя всему что я знаю.
+					Скажу тебе честно, для меня это тоже своего рода "необычный" опыт.
+				</p>
+			</div>
+			<img id="fisherman" src="../sources/fisherman.png" />
+			<div id="dialogue_contol">
+				<div id="btn">Далее</div>
+			</div>
+		</div>
+	</body>
+</html>
