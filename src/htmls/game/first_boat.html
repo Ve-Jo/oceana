@@ -37,10 +37,20 @@
 		#tutorial {
 			width: 500px;
 			height: 400px;
-			background-color: rgb(144, 186, 255);
+			background-color: #2b2d31;
 			border-radius: 30px 30px 0px 0px;
 			position: absolute;
 			top: 100px;
+		}
+		#sea_circle {
+			width: 200px;
+			height: 200px;
+			position: absolute;
+			background-color: rgb(78, 134, 199);
+			border-radius: 200px;
+			top: 90px;
+			left: 150px;
+			filter: blur(20px);
 		}
 		#tutorial img {
 			height: 125px;
@@ -52,22 +62,23 @@
 			width: 200px;
 			height: 30px;
 			position: absolute;
-			background-color: rgb(30, 87, 153);
+			background-color: rgb(255, 255, 255);
 			border-radius: 20px;
-			top: 300px;
+			top: 75px;
 			left: 150px;
 		}
 		#boat_outline span {
 			padding: 10px;
-			color: white;
+			color: rgb(0, 0, 0);
 			font-size: 20px;
 		}
 		#next_btn {
-			width: 100px;
-			height: 30px;
+			width: 150px;
+			height: 60px;
 			position: absolute;
-			top: 350px;
-			left: 200px;
+			top: 320px;
+			left: 175px;
+			font-size: 25px;
 		}
 		#boat_name, #next_btn {
 			border-radius: 10px;
@@ -79,7 +90,7 @@
 			font-size: 25px;
 			position: relative;
 			left: 50px;
-			top: 50px;
+			top: 25px;
 			color: white;
 		}
 	</style>
@@ -87,9 +98,10 @@
         <img src="../sources/vejo.png" id="user_avatar"></img>
 		<div id="header"><span id="welcome_text">Начало обучения</span></div>
 		<div id="tutorial">
+			<div id="sea_circle"></div>
 			<div id="name_question">Как назовём ваш первый корабль?</div>
-			<img src="../sources/icons/boat.png"></img>
 			<div id="boat_outline"><span id="boat_text">. . .</span></div>
+			<img src="../sources/icons/boat.png"></img>
 			<button id="next_btn">Далее</button>
 		</div>	
 	</div>
