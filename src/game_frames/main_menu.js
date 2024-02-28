@@ -4,8 +4,8 @@ import {
 	ButtonBuilder,
 	ActionRowBuilder,
 } from "discord.js";
-import game from "./game.js";
-import tutorial from "./tutorial.js";
+/*import game from "./game.js";*/
+import tutorial from "./first_boat.js";
 import ColorThief from "../modules/ColorThief.js";
 import prettyMilliseconds from "pretty-ms";
 import User from "./../models/UserModel";
@@ -95,7 +95,7 @@ export default async (client, interaction, collector) => {
 		if (i.customId === "game_start") {
 			await i.deferUpdate();
 			if (await User.exists({ id: interaction.user.id })) {
-				await game(client, interaction, collector);
+				/*await game(client, interaction, collector);*/
 			} else {
 				await tutorial(client, interaction, collector);
 			}
