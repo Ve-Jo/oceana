@@ -2,10 +2,6 @@ const User = require("../models/UserModel");
 const Boat = require("../models/BoatModel");
 const World = require("../models/WorldModel");
 const Upgrades = require("../models/UpgradesModel");
-const Fish = require("../models/FishModel");
-import Island from "../models/IslandModel";
-import Threasure from "../models/ThreasureModel";
-import WorldDecoration from "../models/WorldDecorationModel";
 import { SlashCommandBuilder } from "discord.js";
 
 export default {
@@ -15,6 +11,7 @@ export default {
 			"Команда для первой регистрации пользователя в базе данных."
 		),
 	async execute({ client, interaction }) {
+		return;
 		let user = await User.findOneAndUpdate(
 			{ id: interaction.user.id },
 			{ upsert: true, new: true }
