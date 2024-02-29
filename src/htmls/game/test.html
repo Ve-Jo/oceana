@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<link rel="stylesheet" type="text/css" href="../global.css" />
+	<head>
+		<script
+			src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<style>
+		html * {
+			font-family: "Jost";
+			position: absolute;
+		}
+		#user_avatar {
+			width: 80px;
+			height: 80px;
+		}
+		html {
+			background-color: rgb(146, 211, 255);
+		}
+		#game_frame {
+			position: relative;
+			rotate: 0deg;
+			width: 600px;
+			height: 500px;
+			background: rgb(146, 211, 255);
+		}
+		#boat {
+			height: 120px;
+			top: 195px;
+			left: 250px;
+		}
+		#rotation_line {
+			width: 15px;
+			height: 120px;
+			top: 195px;
+			left: 267px;
+			border-radius: 30px;
+			rotate: 0deg;
+			background-color: white;
+		}
+		#all_objects {
+			left: 255px;
+			top: 240px;
+			position: absolute;
+			image-rendering: pixelated;
+		}
+	</style>
+	<body>
+		<div id="game_frame">
+			<div id="rotation_line"></div>
+			<img id="boat" src="../sources/icons/boat.png" />
+			<div id="all_objects"></div>
+		</div>
+	</body>
+</html>
