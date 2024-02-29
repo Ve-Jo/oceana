@@ -34,7 +34,11 @@ const BoatSchema = new mongoose.Schema({
 			default: 10,
 		},
 	},
-	guns: {
+	inventory: {
+		type: mongoose.Schema.Types.Mixed,
+		default: [],
+	},
+	/*guns: {
 		level: { type: Number, default: 0 },
 		damage: { type: Number, default: 0 },
 		range: { type: Number, default: 0 },
@@ -64,7 +68,7 @@ const BoatSchema = new mongoose.Schema({
 			type: Number,
 			default: 10,
 		},
-	},
+	},*/
 	health: {
 		current: {
 			type: Number,

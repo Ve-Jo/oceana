@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema({
 		type: Number,
 		default: 1,
 	},
-	energy: {
+	/*energy: {
 		current: {
 			type: Number,
 			default: 20,
@@ -31,7 +31,7 @@ const UserSchema = new mongoose.Schema({
 			type: Number,
 			default: 20,
 		},
-	},
+	},*/
 	diamonds: {
 		type: Number,
 		default: 0,

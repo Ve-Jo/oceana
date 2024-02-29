@@ -19,9 +19,9 @@ const UpgradesSchema = new mongoose.Schema({
 		rod_distance_level: { type: Number, default: 1 },
 		rod_durability_level: { type: Number, default: 1 },
 		rods_counter: { type: Number, default: 1 },
-		guns_level: { type: Number, default: 1 },
+		/*guns_level: { type: Number, default: 1 },
 		guns_counter: { type: Number, default: 0 },
-		cargo_level: { type: Number, default: 1 },
+		cargo_level: { type: Number, default: 1 },*/
 		health_level: { type: Number, default: 1 },
 	},
 	user: {

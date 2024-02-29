@@ -19,7 +19,11 @@ const WorldSchema = new mongoose.Schema({
 		type: Number,
 		default: 40,
 	},
-	day: {
+	staff: {
+		type: Array,
+		default: [],
+	},
+	/*day: {
 		current: {
 			type: Number,
 			default: 0,
@@ -37,8 +41,8 @@ const WorldSchema = new mongoose.Schema({
 			default: Date.now() + ms("5m"),
 		},
 		type: { type: Number, default: 0 },
-	},
-	fishes: [
+	},*/
+	/*fishes: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Fish",
@@ -61,7 +65,7 @@ const WorldSchema = new mongoose.Schema({
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "WorldDecoration",
 		},
-	],
+	],*/
 });
 
 const World = mongoose.model("World", WorldSchema);
