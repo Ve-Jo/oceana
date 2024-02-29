@@ -17,6 +17,8 @@ export default function (client) {
 		changePage,
 		closePage,
 		alignLocalization,
+		createElement,
+		elementExists,
 		status: () => {
 			return browser !== false;
 		},
@@ -37,9 +39,55 @@ async function startBrowser() {
 	}
 }
 
+async function elementExists(userid, elementId) {
+	if (!pages[userid]) return;
+	const page = pages[userid];
+	await page.page.waitForLoadState("domcontentloaded");
+	const temp_html = new JSDOM(
+		fs.readFileSync(`src/htmls/${page.file_name}`, "utf8")
+	);
+
+	const element = temp_html.window.document.getElementById(elementId);
+	return element !== null;
+}
+
+async function createElement(
+	userid,
+	parentElementId,
+	newElementId,
+	type,
+	numberOfDivs = 1
+) {
+	if (!pages[userid]) return;
+	const page = pages[userid];
+	await page.page.waitForLoadState("domcontentloaded");
+	const temp_html = new JSDOM(
+		fs.readFileSync(`src/htmls/${page.file_name}`, "utf8")
+	);
+
+	const parentElement =
+		temp_html.window.document.getElementById(parentElementId);
+
+	if (!parentElement) {
+		console.error("Parent element not found!");
+		return;
+	}
+
+	console.log(`SELECTED TYPE`, type);
+
+	for (let i = 0; i < numberOfDivs; i++) {
+		const newDiv = temp_html.window.document.createElement(type ? type : "div");
+		newDiv.id = newElementId;
+		parentElement.appendChild(newDiv);
+	}
+
+	fs.writeFileSync(`./src/htmls/temp/${userid}.html`, temp_html.serialize());
+}
+
 async function changePage(userid, html = {}, without_temp = false) {
 	if (!pages[userid]) return;
 	const page = pages[userid];
+	await page.page.waitForLoadState("domcontentloaded");
 	const temp_html = new JSDOM(
 		fs.readFileSync(`src/htmls/${page.file_name}`, "utf8")
 	);
@@ -71,7 +119,6 @@ async function changePage(userid, html = {}, without_temp = false) {
 	if (!without_temp) {
 		page.is_temp = true;
 	}
-	await page.page.waitForLoadState("domcontentloaded");
 }
 
 async function alignLocalization(userid, locales = {}, locale) {
