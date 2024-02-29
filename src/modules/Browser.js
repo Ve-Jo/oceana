@@ -18,6 +18,7 @@ export default function (client) {
 		closePage,
 		alignLocalization,
 		createElement,
+		deleteElement,
 		elementExists,
 		status: () => {
 			return browser !== false;
@@ -80,6 +81,25 @@ async function createElement(
 		newDiv.id = newElementId;
 		parentElement.appendChild(newDiv);
 	}
+
+	fs.writeFileSync(`./src/htmls/temp/${userid}.html`, temp_html.serialize());
+}
+
+async function deleteElement(userid, elementId) {
+	if (!pages[userid]) return;
+	const page = pages[userid];
+	await page.page.waitForLoadState("domcontentloaded");
+	const temp_html = new JSDOM(
+		fs.readFileSync(`src/htmls/${page.file_name}`, "utf8")
+	);
+
+	const element = temp_html.window.document.getElementById(elementId);
+	if (!element) {
+		console.error("Element not found!");
+		return;
+	}
+
+	element.remove();
 
 	fs.writeFileSync(`./src/htmls/temp/${userid}.html`, temp_html.serialize());
 }
