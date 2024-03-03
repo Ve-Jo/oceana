@@ -3,11 +3,15 @@
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
-	"scripts": {},
+	"scripts": {
+		"canvas": "bun ./canvas.js"
+	},
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@napi-rs/canvas": "^0.1.50",
 		"asciichart": "^1.5.25",
+		"chokidar": "^3.6.0",
 		"colorthief": "^2.4.0",
 		"colr": "^1.2.2",
 		"discord.js": "^14.14.1",
