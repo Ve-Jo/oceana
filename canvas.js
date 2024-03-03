@@ -47,5 +47,7 @@ chokidar.watch(canvas_file_path).on("change", async (file) => {
 
 process.on("SIGINT", async () => {
 	fs.rmdirSync(canvas_folder_name, { recursive: true });
-	process.exit(0);
+	if (process.env) {
+		process.exit(0);
+	}
 });
