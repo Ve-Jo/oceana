@@ -18,8 +18,8 @@ export default function (client) {
 		closePage,
 		alignLocalization,
 		createElement,
-		deleteElement,
 		elementExists,
+		deleteElement,
 		status: () => {
 			return browser !== false;
 		},
@@ -38,6 +38,7 @@ async function startBrowser() {
 	} catch (error) {
 		console.error("An error occurred:", error);
 	}
+	return;
 }
 
 async function elementExists(userid, elementId) {
@@ -83,6 +84,7 @@ async function createElement(
 	}
 
 	fs.writeFileSync(`./src/htmls/temp/${userid}.html`, temp_html.serialize());
+	return;
 }
 
 async function deleteElement(userid, elementId) {
@@ -102,6 +104,7 @@ async function deleteElement(userid, elementId) {
 	element.remove();
 
 	fs.writeFileSync(`./src/htmls/temp/${userid}.html`, temp_html.serialize());
+	return;
 }
 
 async function changePage(userid, html = {}, without_temp = false) {
@@ -139,6 +142,7 @@ async function changePage(userid, html = {}, without_temp = false) {
 	if (!without_temp) {
 		page.is_temp = true;
 	}
+	return;
 }
 
 async function alignLocalization(userid, locales = {}, locale) {
@@ -174,6 +178,7 @@ async function alignLocalization(userid, locales = {}, locale) {
 		await page.page.goto(`file://` + html_path + "/" + page.file_name);
 		await page.page.waitForLoadState("domcontentloaded");
 	}
+	return;
 }
 
 async function createPage(userid, html_name) {
@@ -193,6 +198,7 @@ async function createPage(userid, html_name) {
 	} catch (error) {
 		console.error("An error occurred:", error);
 	}
+	return;
 }
 
 async function screenshotPage(
@@ -218,6 +224,7 @@ async function screenshotPage(
 	} catch (error) {
 		console.error("An error occurred:", error);
 	}
+	return;
 }
 
 async function closePage(userid) {
@@ -242,4 +249,5 @@ async function closePage(userid) {
 	} catch (error) {
 		console.error("An error occurred:", error);
 	}
+	return;
 }
