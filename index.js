@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits, Options } from "discord.js";
+import { Client, GatewayIntentBits, Options } from "discord.js";
 require("dotenv").config();
 
 const client = new Client({
@@ -28,3 +28,7 @@ const filePromises = [
 });
 
 await Promise.all(filePromises);
+
+if (process.env.CANVAS_PRERENDER === "true") {
+	await import("./canvas").default;
+}
