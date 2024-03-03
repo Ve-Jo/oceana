@@ -40,15 +40,98 @@ export default {
 			await user.save();
 			user = await User.findOne({ id: interaction.user.id });
 			let world = await World.findOne({ _id: user.world });
-			world.staff.push({
-				id: user.world.staff.length,
-				type: "fish",
-				x: 0,
-				y: 0,
-				type: 0,
-				rarity: 1,
-				price: 2,
-			});
+			world.staff.push(
+				{
+					id: user.world.staff.length,
+					type: "fish",
+					x: 0,
+					y: 0,
+					type: 0,
+					rarity: 1,
+					price: 2,
+				},
+				{
+					id: user.world.staff.length,
+					type: "fish",
+					x: 100,
+					y: 0,
+					type: 0,
+					rarity: 1,
+					price: 2,
+				},
+				{
+					id: user.world.staff.length + 1,
+					type: "fish",
+					x: 200,
+					y: 0,
+					type: 0,
+					rarity: 1,
+					price: 2,
+				},
+				{
+					id: user.world.staff.length + 2,
+					type: "fish",
+					x: 300,
+					y: 0,
+					type: 0,
+					rarity: 1,
+					price: 2,
+				},
+				{
+					id: user.world.staff.length + 3,
+					type: "fish",
+					x: 400,
+					y: 0,
+					type: 0,
+					rarity: 1,
+					price: 2,
+				},
+				{
+					id: user.world.staff.length + 4,
+					type: "fish",
+					x: 500,
+					y: 0,
+					type: 0,
+					rarity: 1,
+					price: 2,
+				},
+				{
+					id: user.world.staff.length + 5,
+					type: "fish",
+					x: 600,
+					y: 0,
+					type: 0,
+					rarity: 1,
+					price: 2,
+				},
+				{
+					id: user.world.staff.length + 6,
+					type: "fish",
+					x: 700,
+					y: 0,
+					type: 0,
+					rarity: 1,
+					price: 2,
+				},
+				{
+					id: user.world.staff.length + 7,
+					type: "fish",
+					x: 800,
+					y: 0,
+					type: 0,
+					rarity: 1,
+					price: 2,
+				},
+				{
+					id: user.world.staff.length + 8,
+					type: "fish",
+					x: 900,
+					y: 0,
+					type: 0,
+					rarity: 1,
+					price: 2,
+				}
+			);
 			await world.save();
 			await user.save();
 		}
@@ -61,12 +144,11 @@ export default {
 			console.log(user.x, user.y, user.boat.rotation);
 
 			await client.browser.changePage(interaction.user.id, {
-				"boat.css.rotate": user.boat.rotation + "deg",
-				"fish.css.top": user.y + "px",
-				"fish.css.left": user.x + "px",
+				"rotation_line.css.rotate": `${180 - user.boat.rotation}deg`,
 			});
 
-			user.world.staff.forEach(async (staff) => {
+			for (let i = 0; i < user.world.staff.length; i++) {
+				const staff = user.world.staff[i];
 				if (
 					!(await client.browser.elementExists(
 						`${interaction.user.id}`,
@@ -79,21 +161,30 @@ export default {
 						`fish-${staff.id}`,
 						"img"
 					);
-					await client.browser.changePage(interaction.user.id, {
-						[`fish-${staff.id}.css.width`]: "50px",
-						[`fish-${staff.id}.src`]: "../sources/icons/fish.png",
-					});
 				}
+
+				const fishOffsetX =
+					(user.x - staff.x) * Math.cos((-user.boat.rotation * Math.PI) / 180) -
+					(user.y - staff.y) * Math.sin((-user.boat.rotation * Math.PI) / 180);
+				const fishOffsetY =
+					(user.x - staff.x) * Math.sin((-user.boat.rotation * Math.PI) / 180) +
+					(user.y - staff.y) * Math.cos((-user.boat.rotation * Math.PI) / 180);
+
 				await client.browser.changePage(interaction.user.id, {
-					[`fish-${staff.id}.css.top`]: staff.y + user.y + "px",
-					[`fish-${staff.id}.css.left`]: staff.x + user.x + "px",
+					[`fish-${staff.id}.css.width`]: "50px",
+					[`fish-${staff.id}.src`]: "../sources/icons/fish.png",
+					[`fish-${staff.id}.css.top`]: fishOffsetY + "px",
+					[`fish-${staff.id}.css.left`]: fishOffsetX + "px",
 				});
-			});
+				console.log(
+					`DIFFERENCE X: ${user.x - staff.x}; Y: ${user.y - staff.y}`
+				);
+			}
 
 			const controls = new ActionRowBuilder().addComponents([
 				new ButtonBuilder()
 					.setCustomId("game_rotateleft")
-					.setEmoji(user.boat.rotation < 180 ? "↖️" : "↙️")
+					.setEmoji("↖️")
 					.setStyle(1),
 				new ButtonBuilder()
 					.setCustomId("game_forward")
@@ -101,7 +192,7 @@ export default {
 					.setStyle(1),
 				new ButtonBuilder()
 					.setCustomId("game_rotateright")
-					.setEmoji(user.boat.rotation < 180 ? "↗️" : "↘️")
+					.setEmoji("↗️")
 					.setStyle(1),
 			]);
 
@@ -141,20 +232,14 @@ export default {
 				let deltaY = distance * Math.sin(angleInRadians);
 				user.x += deltaX;
 				user.y += deltaY;
+				console.log(`MOVED`);
+				console.log(Math.floor(deltaX), Math.floor(deltaY));
 			}
 			if (button.customId === "game_rotateright") {
 				user.boat.rotation += 25;
 				if (user.boat.rotation >= 360) {
 					user.boat.rotation -= 360;
 				}
-			}
-			if (button.customId === "game_backward") {
-				let angleInRadians = ((user.boat.rotation + 90) * Math.PI) / 180;
-				let distance = 50;
-				let deltaX = -distance * Math.cos(angleInRadians);
-				let deltaY = -distance * Math.sin(angleInRadians);
-				user.x += deltaX;
-				user.y += deltaY;
 			}
 			update();
 		});
