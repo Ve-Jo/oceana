@@ -8,7 +8,7 @@ const pages = {
 };
 let browser = false;
 
-const html_path = path.resolve(process.cwd(), "src/htmls/game");
+const html_path = path.resolve(process.cwd(), "src/htmls");
 console.log(html_path);
 
 export default function (client) {
