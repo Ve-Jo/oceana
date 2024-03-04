@@ -141,6 +141,7 @@ export default {
 		await client.browser.createPage(interaction.user.id, "./game/test.html");
 
 		async function update() {
+			console.time("browser");
 			console.log(user.x, user.y, user.boat.rotation);
 
 			await client.browser.changePage(interaction.user.id, {
@@ -213,6 +214,7 @@ export default {
 				components: [controls],
 				ephemeral: false,
 			});
+			console.timeEnd("browser");
 		}
 		update();
 		let collector = await game_collector({ client, interaction });
