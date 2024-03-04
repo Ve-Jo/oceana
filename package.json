@@ -26,7 +26,7 @@
     "os-utils": "^0.0.14",
     "path": "^0.12.7",
     "playwright": "^1.41.2",
-    "pretty-ms": "7.0.1"
+    "pretty-ms": "9.0.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.41.2",
