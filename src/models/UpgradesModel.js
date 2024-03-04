@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const UpgradesSchema = new mongoose.Schema({
 	upgrades_for_id: {
@@ -40,4 +40,4 @@ const UpgradesSchema = new mongoose.Schema({
 
 const Upgrades = mongoose.model("Upgrades", UpgradesSchema);
 
-module.exports = Upgrades;
+export default Upgrades;

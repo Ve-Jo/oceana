@@ -4,11 +4,11 @@ import {
 	SlashCommandBuilder,
 	AttachmentBuilder,
 } from "discord.js";
-import User from "./../models/UserModel";
-import Boat from "./../models/BoatModel";
-import World from "./../models/WorldModel";
-import Upgrades from "./../models/UpgradesModel";
-import game_collector from "../game_frames/collectors/game_collector";
+import User from "./../models/UserModel.js";
+import Boat from "./../models/BoatModel.js";
+import World from "./../models/WorldModel.js";
+import Upgrades from "./../models/UpgradesModel.js";
+import game_collector from "../game_frames/collectors/game_collector.js";
 
 export default {
 	data: new SlashCommandBuilder()

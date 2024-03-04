@@ -5,7 +5,7 @@ import { Collection } from "discord.js";
 export default async function (client) {
 	client.events = new Collection();
 
-	const eventsPath = path.resolve(import.meta.dir, "../", "events");
+	let eventsPath = path.join(process.cwd(), "./src/events");
 
 	const eventFiles = fs
 		.readdirSync(eventsPath)

@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const ms = require("ms");
+import mongoose from "mongoose";
+import ms from "ms";
 
 const WorldSchema = new mongoose.Schema({
 	world_for_id: {
@@ -70,4 +70,4 @@ const WorldSchema = new mongoose.Schema({
 
 const World = mongoose.model("World", WorldSchema);
 
-module.exports = World;
+export default World;

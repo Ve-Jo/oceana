@@ -1,7 +1,7 @@
-const User = require("../models/UserModel");
-const Boat = require("../models/BoatModel");
-const World = require("../models/WorldModel");
-const Upgrades = require("../models/UpgradesModel");
+import User from "../models/UserModel.js";
+import Boat from "../models/BoatModel.js";
+import World from "../models/WorldModel.js";
+import Upgrades from "../models/UpgradesModel.js";
 import { SlashCommandBuilder } from "discord.js";
 
 export default {

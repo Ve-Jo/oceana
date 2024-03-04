@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const BoatSchema = new mongoose.Schema({
 	boat_for_id: {
@@ -83,4 +83,4 @@ const BoatSchema = new mongoose.Schema({
 
 const Boat = mongoose.model("Boat", BoatSchema);
 
-module.exports = Boat;
+export default Boat;

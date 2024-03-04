@@ -8,7 +8,7 @@ import {
 	TextInputBuilder,
 	TextInputStyle,
 } from "discord.js";
-import ColorThief from "../modules/ColorThief";
+import ColorThief from "../modules/ColorThief.js";
 import tutorial_game from "./tutorial_game.js";
 
 export default async (client, interaction, collector) => {

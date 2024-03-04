@@ -1,6 +1,6 @@
 import { REST, Routes } from "discord.js";
 
-export default function (client) {
+export default (client) => {
 	const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 	(async () => {
 		try {
@@ -11,4 +11,4 @@ export default function (client) {
 			console.error(error);
 		}
 	})();
-}
+};

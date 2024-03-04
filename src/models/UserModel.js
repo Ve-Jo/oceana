@@ -1,4 +1,5 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+import autopopulate from "mongoose-autopopulate";
 
 const UserSchema = new mongoose.Schema({
 	id: { type: Number, required: true, unique: true },
@@ -63,8 +64,8 @@ const UserSchema = new mongoose.Schema({
 	},
 });
 
-UserSchema.plugin(require("mongoose-autopopulate"));
+UserSchema.plugin(autopopulate);
 
 const User = mongoose.model("User", UserSchema);
 
-module.exports = User;
+export default User;

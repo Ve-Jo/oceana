@@ -5,7 +5,6 @@ let latest_lang;
 export default {
 	name: Events.InteractionCreate,
 	run: async (client, interaction) => {
-		console.log(interaction);
 		let command;
 
 		const interactionTypes = [

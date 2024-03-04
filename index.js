@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits, Options } from "discord.js";
-require("dotenv").config();
+import "dotenv/config";
 
 const client = new Client({
 	intents: [GatewayIntentBits.Guilds],
@@ -23,12 +23,15 @@ const filePromises = [
 	"ProcessUsage",
 	"Caching",
 ].map(async (file) => {
-	const module = await import(`./src/modules/${file}`);
+	const module = await import(`./src/modules/${file}.js`);
 	return module.default(client);
 });
 
-await Promise.all(filePromises);
+async function run() {
+	await Promise.all(filePromises);
 
-if (process.env.CANVAS_PRERENDER === "true") {
-	await import("./canvas").default;
+	if (process.env.CANVAS_PRERENDER === "true") {
+		await import("./canvas").default;
+	}
 }
+run();
