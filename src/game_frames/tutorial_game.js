@@ -1,5 +1,5 @@
 import { EmbedBuilder, AttachmentBuilder } from "discord.js";
-import ColorThief from "../modules/ColorThief";
+import ColorThief from "../modules/ColorThief.js";
 
 export default async (client, interaction, collector) => {
 	await client.browser.createPage(

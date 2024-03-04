@@ -8,7 +8,8 @@ const pages = {
 };
 let browser = false;
 
-const html_path = path.resolve(import.meta.dir, "../htmls");
+const html_path = path.resolve(process.cwd(), "src/htmls/game");
+console.log(html_path);
 
 export default function (client) {
 	client.browser = {

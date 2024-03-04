@@ -2,12 +2,12 @@ import { Collection } from "discord.js";
 import fs from "fs";
 import path from "path";
 
-import slashes from "./Slashes";
+import slashes from "./Slashes.js";
 
 export default async function (client) {
 	client.commands = new Collection();
 
-	const commandsPath = path.resolve(import.meta.dir, "../", "cmds");
+	const commandsPath = path.resolve(process.cwd(), "src/cmds");
 
 	const commandFiles = fs
 		.readdirSync("./src/cmds")

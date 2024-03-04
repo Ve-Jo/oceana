@@ -8,7 +8,7 @@ import {
 import tutorial from "./first_boat.js";
 import ColorThief from "../modules/ColorThief.js";
 import prettyMilliseconds from "pretty-ms";
-import User from "./../models/UserModel";
+import User from "./../models/UserModel.js";
 
 export default async (client, interaction, collector) => {
 	await client.browser.createPage(interaction.user.id, "./game/main_menu.html");
