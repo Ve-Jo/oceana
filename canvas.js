@@ -18,15 +18,22 @@ async function importFile(file) {
 }
 
 async function render_canvas(file) {
-	const canvas = await importFile(file);
-	const buffer = await canvas.default();
-	const fileName = path.basename(file);
-	fs.writeFileSync(
-		`${canvas_folder_name}/${fileName.replace(".js", "")}.png`,
-		buffer
-	);
-
-	console.log(`Rendered ${file}`);
+	try {
+		const canvas = await importFile(file);
+		if (typeof canvas.default === "function" && canvas.default.length === 0) {
+			const buffer = await canvas.default();
+			const fileName = path.basename(file);
+			fs.writeFileSync(
+				`${canvas_folder_name}/${fileName.replace(".js", "")}.png`,
+				buffer
+			);
+			console.log(`Rendered ${file}`);
+		} else {
+			console.log(`Skipping ${file} because default function has arguments`);
+		}
+	} catch (error) {
+		return console.log(error);
+	}
 }
 
 if (!fs.existsSync(canvas_folder_name)) {
