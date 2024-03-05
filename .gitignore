@@ -8,3 +8,4 @@ bun.lockb
 /blob-report/
 /playwright/.cache/
 temp.json
+/emojis
