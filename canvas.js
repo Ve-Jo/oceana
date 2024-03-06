@@ -21,13 +21,14 @@ async function render_canvas(file) {
 	try {
 		const canvas = await importFile(file);
 		if (typeof canvas.default === "function" && canvas.default.length === 0) {
+			let time = Date.now();
 			const buffer = await canvas.default();
 			const fileName = path.basename(file);
 			fs.writeFileSync(
-				`${canvas_folder_name}/${fileName.replace(".js", "")}.png`,
+				`${canvas_folder_name}/${fileName.replace(".js", "")}.jpeg`,
 				buffer
 			);
-			console.log(`Rendered ${file}`);
+			console.log(`Rendered ${file} (${Date.now() - time}ms)`);
 		} else {
 			console.log(`Skipping ${file} because default function has arguments`);
 		}
@@ -52,9 +53,8 @@ chokidar.watch(canvas_file_path).on("change", async (file) => {
 	await render_canvas("./" + file);
 });
 
-process.on("SIGINT", async () => {
-	fs.rmdirSync(canvas_folder_name, { recursive: true });
-	if (process.env) {
-		process.exit(0);
-	}
-});
+if (!process.env.CANVAS_PRERENDER) {
+	process.on("SIGINT", async () => {
+		fs.rmdirSync(canvas_folder_name, { recursive: true });
+	});
+}
