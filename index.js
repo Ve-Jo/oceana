@@ -10,7 +10,7 @@ client.login(process.env.TOKEN);
 
 process.on("SIGINT", async () => {
 	const html_cleaner = await import("./src/modules/HTMLSCleaner");
-	html_cleaner.default();
+	await html_cleaner.default();
 	process.exit(0);
 });
 

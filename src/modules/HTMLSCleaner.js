@@ -1,6 +1,9 @@
 import fs from "fs";
 
-export default function () {
+export default async function () {
+	fs.unlinkSync("./temp.json");
 	fs.rmdirSync("src/htmls/temp", { recursive: true });
-	fs.unlinkSync(process.env.CACHE_PATH);
+	if (process.env.CANVAS_PRERENDER === "true") {
+		fs.rmdirSync("./renders", { recursive: true });
+	}
 }
