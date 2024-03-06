@@ -2,6 +2,20 @@
 
 *Changelog created using the [Simple Changelog](https://marketplace.visualstudio.com/items?itemName=tobiaswaelde.vscode-simple-changelog) extension for VS Code.*
 
+## [0.0.9-dev] - 2024-03-06
+### Added
+- Main menu was rewrited on @napi-rs/canvas
+- All rendering on canvas get performence boost with image links caching and emoji/image prerender
+- Now text on canvas has own auto font size function, helps with localization.
+- When using canvas prerender, it has timer (to see how fast and slow it is)
+
+### Deprecated
+- main_menu for Browser was deprecated and will deleted soon
+
+### Fixed
+- Now temp.json file for Caching module was correctly deleting after process is stopped
+
+
 ## [0.0.8-dev] - 2024-03-03
 ### Added
 - We're experimenting with using @napi-rs/canvas library for rendering using canvas element instead of rendering entire html page using browser.
