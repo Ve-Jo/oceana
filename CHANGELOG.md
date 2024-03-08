@@ -2,6 +2,21 @@
 
 *Changelog created using the [Simple Changelog](https://marketplace.visualstudio.com/items?itemName=tobiaswaelde.vscode-simple-changelog) extension for VS Code.*
 
+## [0.0.10-dev] - 2024-03-08
+### Added
+- We're adding noise to make depth of water in the game
+- Sticky elements to the boat was implemented
+
+### Changed
+- Everything that is cached using files was stored inside one folder
+- Canvas Prerender module not becomes primary, it can be disabled with "PRODUCTION" env to "true"
+- The game is returning to only-boat rotation, becouse its hard to implement noice with rotation variable
+- Dockerfile now dont installing playwright, saves time
+
+### Removed
+- main_menu and test (browser versions) was deleted
+
+
 ## [0.0.9-dev] - 2024-03-06
 ### Added
 - Main menu was rewrited on @napi-rs/canvas
