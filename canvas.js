@@ -1,5 +1,5 @@
 const canvas_file_path = "./src/htmls/game/canvas";
-const canvas_folder_name = "./renders";
+const canvas_folder_name = "./temp";
 
 import fs from "fs";
 import chokidar from "chokidar";

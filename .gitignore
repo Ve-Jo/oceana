@@ -9,4 +9,4 @@ bun.lockb
 /playwright/.cache/
 temp.json
 /emojis
-/renders
+/temp
