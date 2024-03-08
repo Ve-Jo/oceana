@@ -12,6 +12,7 @@
   "dependencies": {
     "@napi-rs/canvas": "^0.1.50",
     "@resvg/resvg-js": "^2.6.0",
+    "alea": "^1.0.1",
     "asciichart": "^1.5.25",
     "axios": "^1.6.7",
     "chokidar": "^3.6.0",
@@ -28,6 +29,7 @@
     "os-utils": "^0.0.14",
     "path": "^0.12.7",
     "pretty-ms": "7.0.1",
+    "simplex-noise": "^4.0.1",
     "twemoji-parser": "^14.0.0"
   },
   "devDependencies": {
