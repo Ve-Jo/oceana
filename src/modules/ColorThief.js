@@ -1,5 +1,8 @@
-import ColorThief from "colorthief";
 import fs from "fs";
+import ColorThief from "colorthief";
+
+const cacheFilePath = "./temp/colorthief.json";
+let cacheObj = {};
 
 export default {
 	closer_color: async function (url) {
@@ -11,22 +14,37 @@ export default {
 				})
 				.join("");
 
-		let cacheObj = JSON.parse(fs.readFileSync(process.env.CACHE_PATH));
-
-		if (cacheObj["colorthief"][url]) {
+		if (cacheObj[url]) {
 			console.log("Returning from cache");
-			return cacheObj["colorthief"][url];
+			return cacheObj[url];
 		} else {
-			let color = await ColorThief.getColor(url);
-			let hex_color = rgbToHex(color);
+			let color;
+			let hex_color;
 
-			cacheObj["colorthief"][url] = hex_color;
-			fs.writeFileSync(
-				process.env.CACHE_PATH,
-				JSON.stringify(cacheObj),
-				"utf8"
-			);
+			try {
+				if (!fs.existsSync(cacheFilePath)) {
+					fs.writeFileSync(cacheFilePath, "{}");
+				}
 
+				const data = fs.readFileSync(cacheFilePath, "utf8");
+				const cacheData = JSON.parse(data);
+
+				if (cacheData[url]) {
+					hex_color = cacheData[url];
+				} else {
+					color = await ColorThief.getColor(url);
+					hex_color = rgbToHex(color);
+
+					cacheData[url] = hex_color;
+					fs.writeFileSync(cacheFilePath, JSON.stringify(cacheData));
+				}
+			} catch (error) {
+				console.error("Error reading or writing to colorthief.json:", error);
+				color = await ColorThief.getColor(url);
+				hex_color = rgbToHex(color);
+			}
+
+			cacheObj[url] = hex_color;
 			return hex_color;
 		}
 	},
