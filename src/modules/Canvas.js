@@ -8,6 +8,8 @@ import canvas, { Image, Path2D } from "@napi-rs/canvas";
 
 axios.defaults.headers.common["Accept-Encoding"] = "gzip";
 
+let canvas_cached_imgs = {};
+
 async function loadLocalImage(imagePath, imageName) {
 	return new Promise(async (resolve, reject) => {
 		const cachedImagePath = join(imagePath, imageName);
@@ -43,7 +45,7 @@ async function loadImage(image_name, image, localImage) {
 		localImage,
 	});
 
-	const rendersDirectory = "./renders";
+	const rendersDirectory = "./temp";
 	if (!fs.existsSync(rendersDirectory)) {
 		fs.mkdirSync(rendersDirectory);
 	}
@@ -52,7 +54,12 @@ async function loadImage(image_name, image, localImage) {
 	console.log(imagePath);
 
 	if (localImage) {
-		return await canvas.loadImage(image);
+		if (canvas_cached_imgs[image_name]) {
+			return canvas_cached_imgs[image_name];
+		} else {
+			canvas_cached_imgs[image_name] = await canvas.loadImage(image);
+			return canvas_cached_imgs[image_name];
+		}
 	} else if (fs.existsSync(imagePath)) {
 		console.time("Returning from cache");
 		console.log("Returning from cache");
