@@ -4,8 +4,6 @@ import ctx_extended from "./../../../modules/Canvas.js";
 import prettyMilliseconds from "pretty-ms";
 import User from "./../../../models/UserModel.js";
 
-import fs from "fs";
-
 canvas.GlobalFonts.loadFontsFromDir("fonts");
 
 export default async (client, interaction) => {
@@ -16,7 +14,7 @@ export default async (client, interaction) => {
 		hello: `Привет, ${interaction.user.username}!`,
 		created_with_love: "Создано с любовью, @vejoy_",
 		uptime: `${prettyMilliseconds(client.uptime)}`,
-		bot_version: "0.0.1",
+		bot_version: process.env.VISIBLE_VERSION,
 		play: "Играть",
 		level: `Уровень: ${user_level}`,
 		settings: "Настройки",
