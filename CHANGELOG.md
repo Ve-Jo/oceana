@@ -9,6 +9,7 @@
 - We're adding smooth location changing color using one more noise-texture upper it
 - We're added statistic ui blocks close to avatar that has auto-alighnment and line jumping
 - Depth of water is rendering faster by 2X (for future performance mode, it has 4X speed bost and also new visual style)
+- We're added speed arrow, and also make the boat moves with the rotation with losing speed
 
 ### Changed
 - (Work in progress) We're experimenting with how boat changing its own color based on location color.
