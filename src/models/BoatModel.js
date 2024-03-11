@@ -31,7 +31,7 @@ const BoatSchema = new mongoose.Schema({
 		},
 		max: {
 			type: Number,
-			default: 10,
+			default: 100,
 		},
 	},
 	inventory: {
