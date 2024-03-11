@@ -160,28 +160,41 @@ export default async (client, interaction, collector) => {
 	}
 	await update();
 
+	async function move_boat_forward() {
+		let angleInRadians = ((user.boat.rotation + 90) * Math.PI) / 180;
+		let distance = 80;
+		let deltaX = distance * Math.cos(angleInRadians);
+		let deltaY = distance * Math.sin(angleInRadians);
+		user.x += deltaX;
+		user.y += deltaY;
+	}
+
 	collector.on("collect", async (button) => {
 		if (button.customId === "game_rotateleft") {
 			user.boat.rotation -= 25;
-			if (user.boat.rotation <= -360) {
+			if (user.boat.rotation <= 0) {
 				user.boat.rotation += 360;
 			}
+			if (user.boat.speed.current >= 10) {
+				user.boat.speed.current -= 10;
+			}
+			await move_boat_forward();
 		}
 		if (button.customId === "game_forward") {
-			let angleInRadians = ((user.boat.rotation + 90) * Math.PI) / 180;
-			let distance = 50;
-			let deltaX = distance * Math.cos(angleInRadians);
-			let deltaY = distance * Math.sin(angleInRadians);
-			user.x += deltaX;
-			user.y += deltaY;
-			console.log(`MOVED`);
-			console.log(Math.floor(deltaX), Math.floor(deltaY));
+			if (user.boat.speed.current < user.boat.speed.max) {
+				user.boat.speed.current += 20;
+			}
+			await move_boat_forward();
 		}
 		if (button.customId === "game_rotateright") {
 			user.boat.rotation += 25;
 			if (user.boat.rotation >= 360) {
 				user.boat.rotation -= 360;
 			}
+			if (user.boat.speed.current >= 10) {
+				user.boat.speed.current -= 10;
+			}
+			await move_boat_forward();
 		}
 		await update();
 		await button.deferUpdate();
