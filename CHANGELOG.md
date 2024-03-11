@@ -2,6 +2,21 @@
 
 *Changelog created using the [Simple Changelog](https://marketplace.visualstudio.com/items?itemName=tobiaswaelde.vscode-simple-changelog) extension for VS Code.*
 
+## [0.0.11-dev] - 2024-03-11
+### Added
+- We're added one more notification type. Progress bars. It will show the level bar and will visible close to boat as other notifications
+- Sticky elements was visually upgraded with ability to show many of them
+- We're adding smooth location changing color using one more noise-texture upper it
+- We're added statistic ui blocks close to avatar that has auto-alighnment and line jumping
+- Depth of water is rendering faster by 2X (for future performance mode, it has 4X speed bost and also new visual style)
+
+### Changed
+- (Work in progress) We're experimenting with how boat changing its own color based on location color.
+
+### Fixed
+- Fixed issue when the boat can rotate to 360 and -360 degrees, that causes interface bugs
+
+
 ## [0.0.10-dev] - 2024-03-08
 ### Added
 - We're adding noise to make depth of water in the game
