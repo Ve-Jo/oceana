@@ -193,6 +193,7 @@ async function autoTextFont(ctx, text, width, font, isBold) {
 		size--;
 		ctx.font = `${isBold ? "900 " : ""}${size}px ${font}`;
 	}
+	return size;
 }
 
 export default {
