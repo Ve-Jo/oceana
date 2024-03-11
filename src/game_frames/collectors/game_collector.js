@@ -12,7 +12,7 @@ export default async ({ client, interaction }) => {
 	}
 	const collector = interaction.channel.createMessageComponentCollector({
 		filter: (i) => i.user.id === interaction.user.id,
-		time: 60000,
+		idle: 60000,
 	});
 	ActiveCollectors.set(interaction.user.id, collector);
 
