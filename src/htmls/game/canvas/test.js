@@ -11,88 +11,7 @@ Canvas.GlobalFonts.loadFontsFromDir("fonts");
 const depth3D = createNoise2D(alea("1"));
 const locationDepth3D = createNoise2D(alea("2"));
 
-export default async (/*user*/) => {
-	let user = await User.findOneAndUpdate(
-		{ id: "287275956744355841" },
-		{ upsert: true, new: true }
-	);
-
-	user.boat.rotation = 0;
-	user.x = 0;
-	user.y = 200;
-
-	let interaction = null;
-
-	let all_text = {
-		user_avatar_url:
-			typeof interaction == "object"
-				? "https://cdn.discordapp.com/avatars/287275956744355841/74b466b6e166b3ee9f01e2c37ad9425b.png?size=2048"
-				: interaction.user.displayAvatarURL(),
-	};
-	let all_emoji_used = ["🗺️", "👋", "💵", "💎", "🌠"];
-	let all_images_used = [
-		{
-			image_name: "boat",
-			image_url: "./src/htmls/sources/icons/boat.png",
-			localImage: true,
-		},
-		{
-			image_name: "fish",
-			image_url: "./src/htmls/sources/icons/fish.png",
-			localImage: true,
-		},
-		{
-			image_name: "user_avatar-" + "test",
-			image_url: all_text["user_avatar_url"],
-			localImage: false,
-		},
-	];
-	let all_prerendered = {};
-
-	let canvas = Canvas.createCanvas(800, 1400);
-	let ctx = canvas.getContext("2d");
-
-	console.time("loadLocalEmoji");
-	await Promise.all(
-		all_emoji_used.map(async (emoji) => {
-			let emoji_img = await ctx_extended.loadLocalImage(
-				"emojis",
-				`${emoji}.png`
-			);
-			all_prerendered[emoji] = emoji_img;
-		})
-	);
-	console.timeEnd("loadLocalEmoji");
-
-	console.time("loadLocalImages");
-	await Promise.all(
-		all_images_used.map(async (image) => {
-			let image_img = await ctx_extended.loadImage(
-				image.image_name,
-				image.image_url,
-				image.localImage
-			);
-			all_prerendered[image.image_name] = image_img;
-		})
-	);
-	console.timeEnd("loadLocalImages");
-
-	ctx.imageSmoothingEnabled = false;
-
-	//FILTER
-	function applyFilterBasedOnNoise() {
-		const noiseValue = locationDepth3D(user.x * 0.00005, user.y * 0.00002);
-
-		console.log(noiseValue);
-
-		ctx.filter = `hue-rotate(${noiseValue * 360}deg); contrast(${
-			noiseValue * 2
-		}%)`;
-	}
-	applyFilterBasedOnNoise();
-
-	//WATER WITH DEPTH
-
+export async function WaterBackground(user, ctx, canvas) {
 	ctx.fillStyle = "rgb(0, 0, 255)";
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -163,49 +82,208 @@ export default async (/*user*/) => {
 		ctx.closePath();
 		batches.delete(color);
 	}
+}
 
-	let ui_elements = [
-		{
-			type: "graph",
-			emoji: "🌠",
-			current_value: user.xp.current < 10 ? 10 : user.xp.current,
-			max_value: user.xp.max,
-			text: "LVL 0 (0/100)",
-		},
-		{
-			emoji: "🗺️",
-			text: "Тест",
-		},
-		{
-			emoji: "🗺️",
-			text: "Тест",
-		},
-	];
+export async function ImagesPrerenderer({
+	all_emoji_used,
+	all_images_used,
+	all_prerendered,
+}) {
+	if (!all_prerendered) all_prerendered = {};
+	await Promise.all(
+		all_emoji_used.map(async (emoji) => {
+			let emoji_img = await ctx_extended.loadLocalImage(
+				"emojis",
+				`${emoji}.png`
+			);
+			all_prerendered[emoji] = emoji_img;
+		})
+	);
+	await Promise.all(
+		all_images_used.map(async (image) => {
+			let image_img = await ctx_extended.loadImage(
+				image.image_name,
+				image.image_url,
+				image.localImage
+			);
+			all_prerendered[image.image_name] = image_img;
+		})
+	);
+	return all_prerendered;
+}
 
-	//BOAT WITH UI
-	let image = await Canvas.loadImage(all_prerendered["boat"]);
-	ctx.save();
-	ctx.filter = "contrast(1.5) brightness(1.5)";
-	ctx.globalCompositeOperation = "luminosity";
-	ctx.translate(canvas.width / 2, canvas.height / 2);
-	ctx.rotate(user.boat.rotation * (Math.PI / 180));
-	ctx.drawImage(image, -50, -100, 100, 200);
+export async function GameTopUI({
+	main_ui,
+	ctx,
+	all_prerendered,
+	avatar_disabled,
+	scale,
+	vertical_offset,
+	horizontal_offset,
+	offset_boat,
+	text_y,
+	emoji_y,
+	emoji_offset,
+	next_line_width,
+	font_scale,
+	offset_between_rectangles,
+	inverse_rectangles,
+}) {
+	let rectangle_width_previous = 0;
+	let rectangle_offset_x = 0;
 
-	/*let rotation = Math.abs(user.boat.rotation % 360);
-	if (user.boat.rotation < 0) {
-		ctx.rotate((Math.PI / 180) * 180);
-		if (user.boat.rotation <= -60 && user.boat.rotation > -130) {
-			ctx.scale(-1, -1);
+	let font_size = 45 * (font_scale || 1);
+	let emoji_size = 50;
+	let rectangle_height = 60;
+	let next_line_at = next_line_width || 400;
+	let rectangle_offset_inc = inverse_rectangles ? -75 : 75;
+	let rectangle_offset_x_inc = offset_between_rectangles || 15;
+	let rectangle_roundness = 15;
+	let no_emoji_move = 20;
+	let boat_mode_offset = 0;
+
+	let text_y_fix = text_y || 0;
+	let emoji_fix_y = emoji_y || 0;
+
+	let avatar_size;
+	let avatar_offset_x;
+	let avatar_x;
+
+	if (avatar_disabled) {
+		avatar_size = 0;
+		avatar_x = 0;
+		avatar_offset_x = 0;
+	} else {
+		avatar_x = 50;
+		avatar_size = 150 - main_ui.length * 5;
+		avatar_offset_x = avatar_x + avatar_size + 25;
+	}
+
+	if (vertical_offset) {
+		rectangle_offset_x = vertical_offset;
+	}
+	if (horizontal_offset) {
+		avatar_offset_x = horizontal_offset;
+	}
+	if (offset_boat) {
+		boat_mode_offset = offset_boat;
+	}
+
+	if (scale) {
+		font_size = font_size * scale;
+		emoji_size = emoji_size * scale * 0.95;
+		rectangle_height = rectangle_height * scale;
+		next_line_at = next_line_at * scale - horizontal_offset;
+		rectangle_offset_inc = rectangle_offset_inc * scale;
+		rectangle_offset_x_inc = rectangle_offset_x_inc * scale;
+		rectangle_roundness = rectangle_roundness * scale;
+		no_emoji_move = no_emoji_move * scale;
+	}
+
+	ctx.fillStyle = "white";
+
+	for (let i = 0; i < main_ui.length; i++) {
+		let ui = main_ui[i];
+
+		if (ui.type === "graph") {
+			ctx.font = `900 ${font_size / 1.5}px Jost`;
+		} else {
+			ctx.font = `900 ${font_size}px Jost`;
 		}
-		if (user.boat.rotation <= -130 && user.boat.rotation > -220) {
-			ctx.scale(1, 1);
-		}
-		if (user.boat.rotation <= -220 && user.boat.rotation > -320) {
-			ctx.scale(-1, -1);
-		}
-		ctx.scale(-1, -1);
-	}*/
 
+		let rectangle_width = 0;
+		rectangle_width = ctx.measureText(ui.value || "").width + 10;
+		if (ui.value) rectangle_width += 20;
+
+		if (ui.emoji) {
+			rectangle_width += ctx.measureText(ui.emoji).width + 40;
+		}
+		if (!ui.emoji) rectangle_width += no_emoji_move;
+
+		if (rectangle_width_previous + rectangle_width >= next_line_at) {
+			rectangle_width_previous = 0;
+			rectangle_offset_x += rectangle_offset_inc;
+		}
+
+		if (ui.type !== "graph") {
+			ctx_extended.ez_rectangle(
+				ctx,
+				rectangle_width_previous + avatar_offset_x,
+				rectangle_offset_x + 50 + boat_mode_offset,
+				rectangle_width - boat_mode_offset,
+				rectangle_height,
+				rectangle_roundness,
+				"rgba(255, 255, 255, 0.5)"
+			);
+		}
+
+		if (ui.type == "graph") {
+			if (!ui.graph_offset) ui.graph_offset = 75;
+			if (!ui.bgcolor) ui.bgcolor = "50, 200, 255";
+			ctx_extended.ez_rectangle(
+				ctx,
+				rectangle_width_previous + avatar_offset_x,
+				rectangle_offset_x + 50 + boat_mode_offset,
+				rectangle_width - boat_mode_offset,
+				rectangle_height,
+				rectangle_roundness,
+				`rgba(${ui.bgcolor}, 0.3)`
+			);
+			if (ui.min_value < 10) ui.min_value = 10;
+			ctx_extended.ez_rectangle(
+				ctx,
+				rectangle_width_previous + avatar_offset_x,
+				rectangle_offset_x + 50 + boat_mode_offset,
+				(ui.min_value / ui.max_value) * rectangle_width - boat_mode_offset,
+				rectangle_height,
+				rectangle_roundness,
+				`rgba(${ui.bgcolor}, 0.5)`
+			);
+		}
+
+		let visible_x = emoji_offset || 0;
+
+		if (ui.emoji) {
+			if (scale) {
+				emoji_fix_y = visible_x / 2;
+			}
+			visible_x = emoji_size + 25;
+			ctx.drawImage(
+				all_prerendered[ui.emoji],
+				rectangle_width_previous + avatar_offset_x + 10,
+				rectangle_offset_x + 55 + emoji_fix_y,
+				emoji_size,
+				emoji_size
+			);
+		}
+
+		if (ui.value) {
+			if (scale) {
+				emoji_fix_y = visible_x * scale - (60 - 10 * (scale / 10));
+			}
+			ctx.fillText(
+				`${ui.value}`,
+				rectangle_width_previous + avatar_offset_x + visible_x,
+				rectangle_offset_x + 96 + emoji_fix_y + text_y_fix
+			);
+		}
+
+		rectangle_width_previous += rectangle_width + rectangle_offset_x_inc;
+	}
+
+	if (!avatar_disabled) {
+		ctx_extended.drawAvatar(
+			ctx,
+			all_prerendered["user_avatar-test"],
+			avatar_x,
+			avatar_x,
+			avatar_size,
+			0.3
+		);
+	}
+}
+
+export async function SpeedIndicator({ ctx, user, x, y, wx, wy }) {
 	if (user.boat.speed.current > 0) {
 		let number_decreaser = user.boat.speed.max / 5;
 		let speed_difference_normalized_inverted_scaled = Math.max(
@@ -222,21 +300,153 @@ export default async (/*user*/) => {
 			"./src/htmls/sources/icons/speed",
 			`move-arrow-${speed_difference_normalized_inverted_scaled}.png`
 		);
-		ctx.drawImage(speed_image, -100, -265, 200, 200);
+		ctx.globalCompositeOperation = "luminosity";
+		ctx.drawImage(speed_image, x || -51, y || -200, wx || 100, wy || 100);
+		ctx.globalCompositeOperation = "source-over";
 	}
+}
 
-	ctx.globalCompositeOperation = "source-over";
-	ctx.filter = "none";
+export default async (/*user*/) => {
+	let user = await User.findOneAndUpdate(
+		{ id: "287275956744355841" },
+		{ upsert: true, new: true }
+	);
 
-	/*let ui_bottom_offset = 0;
-	let ui_top_offset = 0;
+	user.boat.rotation = 0;
+	user.x = 0;
+	user.y = 0;
+	user.boat.speed.current = 0;
 
-	if (ui_elements.length > 4) {
-		ui_bottom_offset = (ui_elements.length - 4) * 25;
-		if (ui_elements.length % 2 !== 0) {
-			ui_top_offset = 50;
-		}
-	}*/
+	let interaction = null;
+
+	let all_text = {
+		user_avatar_url:
+			typeof interaction == "object"
+				? "https://cdn.discordapp.com/avatars/287275956744355841/74b466b6e166b3ee9f01e2c37ad9425b.png?size=2048"
+				: interaction.user.displayAvatarURL(),
+	};
+
+	let all_prerendered = await ImagesPrerenderer({
+		all_emoji_used: [
+			"🗺️",
+			"👋",
+			"💵",
+			"💎",
+			"🌠",
+			"☀️",
+			"🎣",
+			"🐸",
+			"🎒",
+			"❤️",
+		],
+		all_images_used: [
+			{
+				image_name: "boat",
+				image_url: "./src/htmls/sources/icons/boat.png",
+				localImage: true,
+			},
+			{
+				image_name: "fish",
+				image_url: "./src/htmls/sources/icons/fish.png",
+				localImage: true,
+			},
+			{
+				image_name: "user_avatar-" + "test",
+				image_url: all_text["user_avatar_url"],
+				localImage: false,
+			},
+		],
+	});
+
+	let main_ui = [
+		{
+			emoji: "💵",
+			value: user.money.toFixed(1),
+		},
+		{
+			emoji: "💎",
+			value: user.diamonds.toFixed(2),
+		},
+		{
+			emoji: "🌠",
+			type: "graph",
+			min_value: 10,
+			max_value: 100,
+			emoji_size: 35,
+			value: "LVL 0 (0/100)",
+		},
+	];
+
+	let boat_notifications = [
+		{
+			emoji: "❤️",
+			value: "75 / 100",
+			type: "graph",
+			bgcolor: "255, 157, 0",
+			min_value: 75,
+			max_value: 100,
+		},
+	];
+
+	let inventory = [
+		{
+			emoji: "🎒",
+			type: "graph",
+			min_value: 20,
+			max_value: 100,
+			value: "0 / 10kg",
+		},
+		{
+			emoji: "🎣",
+			type: "graph",
+			min_value: 100,
+			max_value: 100,
+			value: "100%",
+		},
+		{
+			emoji: "🐸",
+			value: "2x",
+		},
+	];
+
+	let bottom = [
+		{
+			emoji: "☀️",
+			value: "День 1",
+		},
+		{
+			emoji: "🗺️",
+			value: "1м",
+		},
+	];
+
+	let canvas = Canvas.createCanvas(800, 1400);
+	let ctx = canvas.getContext("2d");
+
+	ctx.imageSmoothingEnabled = false;
+
+	function applyFilterBasedOnNoise() {
+		const noiseValue = locationDepth3D(user.x * 0.00005, user.y * 0.00002);
+
+		console.log(noiseValue);
+
+		ctx.filter = `hue-rotate(${noiseValue * 360}deg); contrast(${
+			noiseValue * 2
+		}%)`;
+	}
+	applyFilterBasedOnNoise();
+
+	await WaterBackground(user, ctx, canvas);
+
+	let image = await Canvas.loadImage(all_prerendered["boat"]);
+	ctx.save();
+	ctx.translate(canvas.width / 2, canvas.height / 2);
+	ctx.rotate(user.boat.rotation * (Math.PI / 180));
+	ctx.drawImage(image, -50, -100, 100, 200);
+
+	let rotation = Math.abs(user.boat.rotation % 360);
+
+	/*await SpeedIndicator({ ctx, user });*/
 
 	if (rotation >= 60 && rotation < 130) {
 		ctx.translate(175, 175);
@@ -245,141 +455,29 @@ export default async (/*user*/) => {
 		ctx.translate(0, 10);
 		ctx.rotate((Math.PI / 180) * -180);
 	} else if (rotation >= 220 && rotation < 320) {
-		ctx.translate(150, -175);
-		ctx.rotate((Math.PI / 180) * 90);
+		ctx.translate(-175, -175);
+		ctx.rotate((Math.PI / 180) * -270);
 	} else if (rotation >= 320) {
 		ctx.translate(0, 0);
 		ctx.rotate((Math.PI / 180) * 360);
 	}
 
-	ctx.font = "900 20px Jost";
+	await GameTopUI({
+		main_ui: boat_notifications,
+		ctx,
+		all_prerendered,
+		avatar_disabled: true,
+		scale: 0.75,
+		vertical_offset: -170,
+		horizontal_offset: 65,
+		offset_boat: 10,
+		text_y: 15,
+		emoji_offset: 17,
+		next_line_width: 600,
+		offset_between_rectangles: 5,
+	});
 
-	function display_elements(ui_elements) {
-		let halfLength = Math.round(ui_elements.length / 2);
-		let i_top = 0;
-		let i2_top = 0;
-		let i3_top = 0;
-		let visible_i = 0;
-
-		let globalOffsetHalf = 0;
-		for (let i = 0; i < ui_elements.length; i++) {
-			const ui_element = ui_elements[i];
-			let offsetY = -100 + visible_i * 100;
-			let offsetX = 0;
-			let globalOffsetY = 0;
-			let globalOffsetX = 0;
-			let globalOffsetY2 = 0;
-			let emojiOffsetY = 0;
-			let emojiOffsetX = 0;
-			let emojiSize = 60;
-			let textOffsetY = 0;
-			let textOffsetX = 0;
-
-			if (ui_element.type == "graph") {
-				offsetX -= 165;
-				offsetY += 225 + i3_top * 70;
-				emojiOffsetY = -40;
-				emojiOffsetX = -30;
-				ctx.textAlign = "center";
-				emojiSize = 25;
-				textOffsetX = 25;
-				textOffsetY = -2;
-				if (rotation >= 60 && rotation < 130) {
-					globalOffsetY2 = -200;
-					globalOffsetX = 150;
-					offsetX += 10;
-				} else {
-					visible_i--;
-					if (rotation >= 130 && rotation < 220) {
-						offsetY -= 215;
-						console.log(`I3_TOP`, i3_top);
-						globalOffsetY2 = -75 - i3_top * 140;
-					} else if (rotation >= 220 && rotation < 320) {
-						offsetY += 100;
-						offsetX += 165;
-						globalOffsetHalf += 60;
-					}
-					i3_top++;
-				}
-			} else {
-				ctx.textAlign = "left";
-				if (rotation >= 220 && rotation < 320) {
-					globalOffsetY2 = 100 + -(i2_top * 200);
-					i2_top++;
-				}
-
-				if (i - i3_top >= halfLength - Math.floor(i3_top / 2) && i > 1) {
-					if (rotation >= 60 && rotation < 130) {
-						offsetY = -325 - i_top * 100;
-					} else if (rotation >= 130 && rotation < 220) {
-						offsetY = -100 + i_top * 100;
-						offsetX = -350;
-					} else if (rotation >= 220 && rotation < 320) {
-						offsetY = 225 + globalOffsetHalf + i_top * 100;
-					} else {
-						offsetY = -100 + i_top * 120;
-						offsetX = -350;
-					}
-					i_top++;
-					globalOffsetY2 = 0;
-				}
-			}
-
-			if (ui_element.type !== "graph") {
-				ctx_extended.ez_rectangle(
-					ctx,
-					globalOffsetX + offsetX + 75,
-					globalOffsetY2 + globalOffsetY + offsetY,
-					ui_element.width || 200,
-					ui_element.height || 75,
-					25,
-					"rgba(255, 255, 255, 0.4)"
-				);
-			}
-			ctx.drawImage(
-				all_prerendered[ui_element.emoji],
-				globalOffsetX + offsetX + 85 + emojiOffsetX,
-				globalOffsetY2 + globalOffsetY + offsetY + 8 + emojiOffsetY,
-				emojiSize,
-				emojiSize
-			);
-			ctx.fillStyle = "white";
-			if (ui_element.text) {
-				ctx_extended.fillLongText(
-					ctx,
-					ui_element.text,
-					globalOffsetX + offsetX + 150 + textOffsetX,
-					globalOffsetY2 + globalOffsetY + offsetY + 25 + textOffsetY,
-					ui_element.width || 150,
-					20
-				);
-			}
-			if (ui_element.type == "graph") {
-				ctx_extended.ez_rectangle(
-					ctx,
-					globalOffsetX + offsetX + 50,
-					globalOffsetY2 + globalOffsetY + offsetY,
-					250,
-					30,
-					10,
-					"rgba(255, 255, 255, 0.2)"
-				);
-				ctx_extended.ez_rectangle(
-					ctx,
-					globalOffsetX + offsetX + 50,
-					globalOffsetY2 + globalOffsetY + offsetY,
-					(ui_element.current_value / ui_element.max_value) * 300,
-					30,
-					10,
-					"rgb(50, 255, 220, 0.3)"
-				);
-			}
-			visible_i++;
-		}
-	}
-
-	display_elements(ui_elements);
-
+	/*await GameUI({ ctx, ui_elements, user, all_prerendered });*/
 	ctx.restore();
 
 	//FISHES
@@ -401,78 +499,44 @@ export default async (/*user*/) => {
 
 	ctx.imageSmoothingEnabled = true;
 
-	//UI
-	let avatar_size = 150;
-	let avatar_x = 50;
-
-	let main_ui = [
-		{
-			emoji: "💵",
-			value: user.money.toFixed(1),
-		},
-		{
-			emoji: "💎",
-			value: user.diamonds.toFixed(2),
-		},
-	];
-
-	avatar_size = 150 - main_ui.length * 5;
-
-	let avatar_offset_x = avatar_x + avatar_size + 25;
-
-	ctx.fillStyle = "white";
-	ctx.font = "900 45px Jost";
-	let rectangle_width_previous = 0;
-	let rectangle_offset_x = 0;
-	for (let i = 0; i < main_ui.length; i++) {
-		let ui = main_ui[i];
-		let rectangle_width = ctx.measureText(ui.value).width + 100;
-
-		if (
-			rectangle_width_previous + rectangle_width >=
-			350 + (400 - avatar_size)
-		) {
-			rectangle_width_previous = 0;
-			rectangle_offset_x += 75;
-		}
-
-		ctx_extended.ez_rectangle(
-			ctx,
-			rectangle_width_previous + avatar_offset_x,
-			rectangle_offset_x + 50,
-			rectangle_width,
-			60,
-			15,
-			"rgba(255, 255, 255, 0.5)"
-		);
-		ctx.drawImage(
-			all_prerendered[ui.emoji],
-			rectangle_width_previous + avatar_offset_x + 10,
-			rectangle_offset_x + 55,
-			50,
-			50
-		);
-		ctx.fillText(
-			`${ui.value}`,
-			rectangle_width_previous + avatar_offset_x + 75,
-			rectangle_offset_x + 96
-		);
-
-		rectangle_width_previous += rectangle_width + 15;
-	}
-
-	//USER AVATAR
-
-	ctx_extended.drawAvatar(
+	await GameTopUI({
+		main_ui,
 		ctx,
-		all_prerendered["user_avatar-test"],
-		avatar_x,
-		avatar_x,
-		avatar_size,
-		0.3
-	);
+		user,
+		all_prerendered,
+	});
 
-	console.log(`AVATAR OFFSET X`, avatar_offset_x);
+	await GameTopUI({
+		main_ui: bottom,
+		ctx,
+		user,
+		all_prerendered,
+		avatar_disabled: true,
+		scale: 0.75,
+		vertical_offset: 1230,
+		horizontal_offset: 45,
+		offset_boat: 10,
+		text_y: 15,
+		next_line_width: 800,
+		emoji_offset: 20,
+		offset_between_rectangles: 2,
+	});
+
+	await GameTopUI({
+		main_ui: inventory,
+		ctx,
+		user,
+		all_prerendered,
+		avatar_disabled: true,
+		vertical_offset: 1150,
+		horizontal_offset: 44,
+		next_line_width: 720,
+		offset_boat: 0,
+		text_y: 0,
+		font_scale: 1,
+		offset_between_rectangles: 10,
+		inverse_rectangles: true,
+	});
 
 	return canvas.toBuffer("image/png");
 };
