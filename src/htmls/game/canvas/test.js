@@ -307,16 +307,6 @@ export async function UIRender({ user, ctx_ui, all_prerendered }) {
 		},
 	];
 
-	if (user.boat.speed.current > 0) {
-		boat_notifications.push({
-			emoji: "⏩",
-			value: user.boat.speed.current < user.boat.speed.max ? "Скорость" : "",
-			type: "graph",
-			min_value: user.boat.speed.current,
-			max_value: user.boat.speed.max,
-		});
-	}
-
 	let inventory = [
 		{
 			emoji: "🎒",
@@ -468,6 +458,16 @@ export default async ({ user, ui_canvas, all_prerendered }) => {
 		},
 	];
 
+	if (user.boat.speed.current > 0) {
+		boat_notifications.push({
+			emoji: "⏩",
+			value: user.boat.speed.current < user.boat.speed.max ? "Скорость" : "",
+			type: "graph",
+			min_value: user.boat.speed.current,
+			max_value: user.boat.speed.max,
+		});
+	}
+
 	/*user.boat.rotation = 0;
 	user.x = 0;
 	user.y = 0;
@@ -506,8 +506,6 @@ export default async ({ user, ui_canvas, all_prerendered }) => {
 		ctx.translate(0, 0);
 		ctx.rotate((Math.PI / 180) * 360);
 	}
-	ctx.restore();
-	ctx.imageSmoothingEnabled = true;
 
 	await GameTopUI({
 		main_ui: boat_notifications,
@@ -523,6 +521,9 @@ export default async ({ user, ui_canvas, all_prerendered }) => {
 		next_line_width: 550,
 		offset_between_rectangles: 5,
 	});
+
+	ctx.restore();
+	ctx.imageSmoothingEnabled = true;
 
 	let ready = await UIRender({ user, ctx_ui: ui_canvas, all_prerendered });
 	ui_canvas = ready;
