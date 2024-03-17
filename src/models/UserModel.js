@@ -3,6 +3,7 @@ import autopopulate from "mongoose-autopopulate";
 
 const UserSchema = new mongoose.Schema({
 	id: { type: Number, required: true, unique: true },
+	ui_updated: { type: Number, default: 0, required: true },
 	started_playing: {
 		type: Date,
 		default: Date.now(),

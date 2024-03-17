@@ -3,7 +3,10 @@ import User from "./../models/UserModel.js";
 import Boat from "./../models/BoatModel.js";
 import World from "./../models/WorldModel.js";
 import Upgrades from "./../models/UpgradesModel.js";
-import Test from "./../htmls/game/canvas/test.js";
+import Test, {
+	ImagesPrerender,
+	UIRender,
+} from "./../htmls/game/canvas/test.js";
 
 export default async (client, interaction, collector) => {
 	let user;
@@ -27,125 +30,52 @@ export default async (client, interaction, collector) => {
 			user[`${model.modelName.toLowerCase()}`] = document._id;
 		}
 		await user.save();
-		user = await User.findOne({ id: interaction.user.id });
-		let world = await World.findOne({ _id: user.world });
-		world.staff.push(
-			{
-				id: user.world.staff.length,
-				type: "fish",
-				x: 0,
-				y: 0,
-				type: 0,
-				rarity: 1,
-				price: 2,
-			},
-			{
-				id: user.world.staff.length,
-				type: "fish",
-				x: 100,
-				y: 0,
-				type: 0,
-				rarity: 1,
-				price: 2,
-			},
-			{
-				id: user.world.staff.length + 1,
-				type: "fish",
-				x: 200,
-				y: 0,
-				type: 0,
-				rarity: 1,
-				price: 2,
-			},
-			{
-				id: user.world.staff.length + 2,
-				type: "fish",
-				x: 300,
-				y: 0,
-				type: 0,
-				rarity: 1,
-				price: 2,
-			},
-			{
-				id: user.world.staff.length + 3,
-				type: "fish",
-				x: 400,
-				y: 0,
-				type: 0,
-				rarity: 1,
-				price: 2,
-			},
-			{
-				id: user.world.staff.length + 4,
-				type: "fish",
-				x: 500,
-				y: 0,
-				type: 0,
-				rarity: 1,
-				price: 2,
-			},
-			{
-				id: user.world.staff.length + 5,
-				type: "fish",
-				x: 600,
-				y: 0,
-				type: 0,
-				rarity: 1,
-				price: 2,
-			},
-			{
-				id: user.world.staff.length + 6,
-				type: "fish",
-				x: 700,
-				y: 0,
-				type: 0,
-				rarity: 1,
-				price: 2,
-			},
-			{
-				id: user.world.staff.length + 7,
-				type: "fish",
-				x: 800,
-				y: 0,
-				type: 0,
-				rarity: 1,
-				price: 2,
-			},
-			{
-				id: user.world.staff.length + 8,
-				type: "fish",
-				x: 900,
-				y: 0,
-				type: 0,
-				rarity: 1,
-				price: 2,
-			}
-		);
-		await world.save();
-		await user.save();
 	}
 
-	async function update() {
-		console.time("canvas");
-		console.log(user.x, user.y, user.boat.rotation);
+	user.ui_updated = 1;
 
-		let result = await Test(user);
+	let ui_canvas;
+	let all_prerendered;
+
+	async function update() {
+		console.time("entire update");
+		console.time("image prerender");
+		all_prerendered = await ImagesPrerender({ interaction });
+		console.timeEnd("image prerender");
+		console.time("ui render");
+		ui_canvas = await UIRender({ user, ctx_ui: ui_canvas, all_prerendered });
+		console.timeEnd("ui render");
+		console.time("canvas render");
+		let result = await Test({ user, ui_canvas, all_prerendered });
+		console.timeEnd("canvas render");
+		console.time("attachment creation");
 		const attachment = new AttachmentBuilder(result, {
 			name: "screenshot.png",
 		});
+		console.timeEnd("attachment creation");
+		console.time("message building and sending");
+
+		let control_buttons = [
+			["↖️", "⬆️", "↗️"],
+			["↗️", "▶️", "↘️"],
+			["↘️", "⬇️", "↙️"],
+			["↙️", "◀️", "↗️"],
+		];
+
+		let control_ready = Math.floor(user.boat.rotation / 90);
 
 		const controls = new ActionRowBuilder().addComponents([
 			new ButtonBuilder()
 				.setCustomId("game_rotateleft")
-				.setEmoji("↖️")
+				.setEmoji(control_buttons[control_ready][0])
 				.setStyle(1),
 			new ButtonBuilder()
 				.setCustomId("game_forward")
-				.setEmoji("⬆️")
+				.setEmoji(control_buttons[control_ready][1])
 				.setStyle(1),
 			new ButtonBuilder()
 				.setCustomId("game_rotateright")
-				.setEmoji("↗️")
+				.setEmoji(control_buttons[control_ready][2])
 				.setStyle(1),
 		]);
 
@@ -156,7 +86,8 @@ export default async (client, interaction, collector) => {
 			components: [controls],
 			ephemeral: false,
 		});
-		console.timeEnd("canvas");
+		console.timeEnd("message building and sending");
+		console.timeEnd("entire update");
 	}
 	await update();
 

@@ -11,7 +11,7 @@ Canvas.GlobalFonts.loadFontsFromDir("fonts");
 const depth3D = createNoise2D(alea("1"));
 const locationDepth3D = createNoise2D(alea("2"));
 
-export async function WaterBackground(user, ctx, canvas) {
+export async function WaterBackground({ user, ctx, canvas, fast_mode }) {
 	ctx.fillStyle = "rgb(0, 0, 255)";
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -19,8 +19,8 @@ export async function WaterBackground(user, ctx, canvas) {
 	let scale = 0.002;
 
 	const threshold = 0.001;
-	const colorBucketSize = 0.01;
-	const mergeDistance = pixelSize * 2;
+	const colorBucketSize = fast_mode ? 0.1 : 0.01;
+	const mergeDistance = pixelSize * (fast_mode ? 10 : 2);
 
 	let batches = new Map();
 	let currentColor = null;
@@ -128,6 +128,8 @@ export async function GameTopUI({
 	font_scale,
 	offset_between_rectangles,
 	inverse_rectangles,
+	avatar_offsetx,
+	avatar_offsety,
 }) {
 	let rectangle_width_previous = 0;
 	let rectangle_offset_x = 0;
@@ -145,18 +147,15 @@ export async function GameTopUI({
 	let text_y_fix = text_y || 0;
 	let emoji_fix_y = emoji_y || 0;
 
-	let avatar_size;
-	let avatar_offset_x;
-	let avatar_x;
+	let avatar_size = 150 - main_ui.length * 5;
+	let avatar_x = 50 + avatar_offsetx || 50;
+	let avatar_y = avatar_offsety || 50;
+	let avatar_offset_x = avatar_x + avatar_size + 25;
 
 	if (avatar_disabled) {
 		avatar_size = 0;
 		avatar_x = 0;
 		avatar_offset_x = 0;
-	} else {
-		avatar_x = 50;
-		avatar_size = 150 - main_ui.length * 5;
-		avatar_offset_x = avatar_x + avatar_size + 25;
 	}
 
 	if (vertical_offset) {
@@ -218,7 +217,6 @@ export async function GameTopUI({
 		}
 
 		if (ui.type == "graph") {
-			if (!ui.graph_offset) ui.graph_offset = 75;
 			if (!ui.bgcolor) ui.bgcolor = "50, 200, 255";
 			ctx_extended.ez_rectangle(
 				ctx,
@@ -276,88 +274,21 @@ export async function GameTopUI({
 			ctx,
 			all_prerendered["user_avatar-test"],
 			avatar_x,
-			avatar_x,
+			avatar_y,
 			avatar_size,
 			0.3
 		);
 	}
 }
 
-export async function SpeedIndicator({ ctx, user, x, y, wx, wy }) {
-	if (user.boat.speed.current > 0) {
-		let number_decreaser = user.boat.speed.max / 5;
-		let speed_difference_normalized_inverted_scaled = Math.max(
-			1,
-			Math.floor(
-				5 -
-					(user.boat.speed.max / number_decreaser -
-						user.boat.speed.current / number_decreaser)
-			)
-		);
-		console.log(user.boat.speed.current / number_decreaser);
-		console.log(user.boat.speed.max / number_decreaser);
-		let speed_image = await ctx_extended.loadLocalImage(
-			"./src/htmls/sources/icons/speed",
-			`move-arrow-${speed_difference_normalized_inverted_scaled}.png`
-		);
-		ctx.globalCompositeOperation = "luminosity";
-		ctx.drawImage(speed_image, x || -51, y || -200, wx || 100, wy || 100);
-		ctx.globalCompositeOperation = "source-over";
+export async function UIRender({ user, ctx_ui, all_prerendered }) {
+	if (typeof ctx_ui !== "undefined" && ctx_ui?.canvas && !user.ui_updated) {
+		return ctx_ui;
+	} else {
+		user.ui_updated = 0;
 	}
-}
-
-export default async (/*user*/) => {
-	let user = await User.findOneAndUpdate(
-		{ id: "287275956744355841" },
-		{ upsert: true, new: true }
-	);
-
-	user.boat.rotation = 0;
-	user.x = 0;
-	user.y = 0;
-	user.boat.speed.current = 0;
-
-	let interaction = null;
-
-	let all_text = {
-		user_avatar_url:
-			typeof interaction == "object"
-				? "https://cdn.discordapp.com/avatars/287275956744355841/74b466b6e166b3ee9f01e2c37ad9425b.png?size=2048"
-				: interaction.user.displayAvatarURL(),
-	};
-
-	let all_prerendered = await ImagesPrerenderer({
-		all_emoji_used: [
-			"🗺️",
-			"👋",
-			"💵",
-			"💎",
-			"🌠",
-			"☀️",
-			"🎣",
-			"🐸",
-			"🎒",
-			"❤️",
-		],
-		all_images_used: [
-			{
-				image_name: "boat",
-				image_url: "./src/htmls/sources/icons/boat.png",
-				localImage: true,
-			},
-			{
-				image_name: "fish",
-				image_url: "./src/htmls/sources/icons/fish.png",
-				localImage: true,
-			},
-			{
-				image_name: "user_avatar-" + "test",
-				image_url: all_text["user_avatar_url"],
-				localImage: false,
-			},
-		],
-	});
-
+	let canvas_ui = Canvas.createCanvas(800, 1400);
+	ctx_ui = canvas_ui.getContext("2d");
 	let main_ui = [
 		{
 			emoji: "💵",
@@ -372,21 +303,19 @@ export default async (/*user*/) => {
 			type: "graph",
 			min_value: 10,
 			max_value: 100,
-			emoji_size: 35,
 			value: "LVL 0 (0/100)",
 		},
 	];
 
-	let boat_notifications = [
-		{
-			emoji: "❤️",
-			value: "75 / 100",
+	if (user.boat.speed.current > 0) {
+		boat_notifications.push({
+			emoji: "⏩",
+			value: user.boat.speed.current < user.boat.speed.max ? "Скорость" : "",
 			type: "graph",
-			bgcolor: "255, 157, 0",
-			min_value: 75,
-			max_value: 100,
-		},
-	];
+			min_value: user.boat.speed.current,
+			max_value: user.boat.speed.max,
+		});
+	}
 
 	let inventory = [
 		{
@@ -420,24 +349,142 @@ export default async (/*user*/) => {
 		},
 	];
 
+	await GameTopUI({
+		main_ui,
+		ctx: ctx_ui,
+		user,
+		all_prerendered,
+		vertical_offset: 50,
+		avatar_offsety: 100,
+	});
+
+	await GameTopUI({
+		main_ui: bottom,
+		ctx: ctx_ui,
+		user,
+		all_prerendered,
+		avatar_disabled: true,
+		scale: 0.75,
+		vertical_offset: -25,
+		horizontal_offset: 50,
+		offset_boat: 10,
+		text_y: 15,
+		next_line_width: 800,
+		emoji_offset: 20,
+		offset_between_rectangles: 2,
+	});
+
+	await GameTopUI({
+		main_ui: inventory,
+		ctx: ctx_ui,
+		user,
+		all_prerendered,
+		avatar_disabled: true,
+		vertical_offset: 1250,
+		horizontal_offset: 44,
+		next_line_width: 720,
+		offset_boat: 0,
+		text_y: 0,
+		font_scale: 1,
+		offset_between_rectangles: 10,
+		inverse_rectangles: true,
+	});
+	ctx_ui = canvas_ui.getContext("2d");
+	return ctx_ui;
+}
+
+export async function ImagesPrerender({ interaction }) {
+	let all_text = {
+		user_avatar_url:
+			typeof interaction == "object"
+				? "https://cdn.discordapp.com/avatars/287275956744355841/74b466b6e166b3ee9f01e2c37ad9425b.png?size=2048"
+				: interaction.user.displayAvatarURL(),
+	};
+
+	return await ImagesPrerenderer({
+		all_emoji_used: [
+			"🗺️",
+			"👋",
+			"💵",
+			"💎",
+			"🌠",
+			"☀️",
+			"🎣",
+			"🐸",
+			"🎒",
+			"❤️",
+			"⏩",
+		],
+		all_images_used: [
+			{
+				image_name: "boat",
+				image_url: "./src/htmls/sources/icons/boat.png",
+				localImage: true,
+			},
+			{
+				image_name: "fish",
+				image_url: "./src/htmls/sources/icons/fish.png",
+				localImage: true,
+			},
+			{
+				image_name: "user_avatar-" + "test",
+				image_url: all_text["user_avatar_url"],
+				localImage: false,
+			},
+		],
+	});
+}
+
+/*let user = await User.findOneAndUpdate(
+	{ id: "287275956744355841" },
+	{ upsert: true, new: true }
+);
+
+let ui_canvas;
+let all_prerendered;
+let interaction = null;*/
+
+export default async ({ user, ui_canvas, all_prerendered }) => {
+	let less_file_size = false;
+	let water_fast_mode = false;
+
+	/*let user = await User.findOneAndUpdate(
+		{ id: "287275956744355841" },
+		{ upsert: true, new: true }
+	);*/
+
+	if (!all_prerendered) {
+		all_prerendered = await ImagesPrerender({ interaction });
+	}
+
+	let boat_notifications = [
+		{
+			emoji: "❤️",
+			value: "75 / 100",
+			type: "graph",
+			bgcolor: "255, 157, 0",
+			min_value: 75,
+			max_value: 100,
+		},
+	];
+
+	/*user.boat.rotation = 0;
+	user.x = 0;
+	user.y = 0;
+	user.boat.speed.current = 100;*/
+
 	let canvas = Canvas.createCanvas(800, 1400);
 	let ctx = canvas.getContext("2d");
 
+	const noiseValue = locationDepth3D(user.x * 0.00005, user.y * 0.00002);
+
+	ctx.filter = `hue-rotate(${noiseValue * 360}deg); contrast(${
+		noiseValue * 2
+	}%)`;
+
+	await WaterBackground({ user, ctx, canvas, fast_mode: water_fast_mode });
+
 	ctx.imageSmoothingEnabled = false;
-
-	function applyFilterBasedOnNoise() {
-		const noiseValue = locationDepth3D(user.x * 0.00005, user.y * 0.00002);
-
-		console.log(noiseValue);
-
-		ctx.filter = `hue-rotate(${noiseValue * 360}deg); contrast(${
-			noiseValue * 2
-		}%)`;
-	}
-	applyFilterBasedOnNoise();
-
-	await WaterBackground(user, ctx, canvas);
-
 	let image = await Canvas.loadImage(all_prerendered["boat"]);
 	ctx.save();
 	ctx.translate(canvas.width / 2, canvas.height / 2);
@@ -445,8 +492,6 @@ export default async (/*user*/) => {
 	ctx.drawImage(image, -50, -100, 100, 200);
 
 	let rotation = Math.abs(user.boat.rotation % 360);
-
-	/*await SpeedIndicator({ ctx, user });*/
 
 	if (rotation >= 60 && rotation < 130) {
 		ctx.translate(175, 175);
@@ -461,10 +506,12 @@ export default async (/*user*/) => {
 		ctx.translate(0, 0);
 		ctx.rotate((Math.PI / 180) * 360);
 	}
+	ctx.restore();
+	ctx.imageSmoothingEnabled = true;
 
 	await GameTopUI({
 		main_ui: boat_notifications,
-		ctx,
+		ctx: ctx,
 		all_prerendered,
 		avatar_disabled: true,
 		scale: 0.75,
@@ -473,15 +520,15 @@ export default async (/*user*/) => {
 		offset_boat: 10,
 		text_y: 15,
 		emoji_offset: 17,
-		next_line_width: 600,
+		next_line_width: 550,
 		offset_between_rectangles: 5,
 	});
 
-	/*await GameUI({ ctx, ui_elements, user, all_prerendered });*/
-	ctx.restore();
+	let ready = await UIRender({ user, ctx_ui: ui_canvas, all_prerendered });
+	ui_canvas = ready;
+	ctx.drawImage(ready.canvas, 0, 0);
 
-	//FISHES
-	for (let fish of user.world.staff) {
+	/*for (let fish of user.world.staff) {
 		let fishImage = await Canvas.loadImage(all_prerendered["fish"]);
 
 		const fishOffsetX = fish.x + user.x;
@@ -493,50 +540,9 @@ export default async (/*user*/) => {
 			fishOffsetY >= 0 &&
 			fishOffsetY <= canvas.height
 		) {
-			/*ctx.drawImage(fishImage, fishOffsetX, fishOffsetY, 40, 35);*/
+			ctx.drawImage(fishImage, fishOffsetX, fishOffsetY, 40, 35);
 		}
-	}
+	}*/
 
-	ctx.imageSmoothingEnabled = true;
-
-	await GameTopUI({
-		main_ui,
-		ctx,
-		user,
-		all_prerendered,
-	});
-
-	await GameTopUI({
-		main_ui: bottom,
-		ctx,
-		user,
-		all_prerendered,
-		avatar_disabled: true,
-		scale: 0.75,
-		vertical_offset: 1230,
-		horizontal_offset: 45,
-		offset_boat: 10,
-		text_y: 15,
-		next_line_width: 800,
-		emoji_offset: 20,
-		offset_between_rectangles: 2,
-	});
-
-	await GameTopUI({
-		main_ui: inventory,
-		ctx,
-		user,
-		all_prerendered,
-		avatar_disabled: true,
-		vertical_offset: 1150,
-		horizontal_offset: 44,
-		next_line_width: 720,
-		offset_boat: 0,
-		text_y: 0,
-		font_scale: 1,
-		offset_between_rectangles: 10,
-		inverse_rectangles: true,
-	});
-
-	return canvas.toBuffer("image/png");
+	return canvas.toBuffer("image/jpeg", less_file_size ? 50 : 90);
 };
