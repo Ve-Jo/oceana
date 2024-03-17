@@ -39,19 +39,12 @@ async function loadLocalImage(imagePath, imageName) {
 }
 
 async function loadImage(image_name, image, localImage) {
-	console.log({
-		image_name,
-		image,
-		localImage,
-	});
-
 	const rendersDirectory = "./temp";
 	if (!fs.existsSync(rendersDirectory)) {
 		fs.mkdirSync(rendersDirectory);
 	}
 
 	const imagePath = path.join(rendersDirectory, `${image_name}.png`);
-	console.log(imagePath);
 
 	if (localImage) {
 		if (canvas_cached_imgs[image_name]) {
@@ -61,8 +54,6 @@ async function loadImage(image_name, image, localImage) {
 			return canvas_cached_imgs[image_name];
 		}
 	} else if (fs.existsSync(imagePath)) {
-		console.time("Returning from cache");
-		console.log("Returning from cache");
 		return canvas.loadImage(imagePath);
 	} else {
 		try {
@@ -162,7 +153,6 @@ async function drawAvatar(
 	clipPath.arcTo(avatarX, avatarY, avatarX + avatarSize, avatarY, cornerRadius);
 	ctx.clip(clipPath);
 
-	console.log(avatarImage);
 	ctx.drawImage(avatarImage, avatarX, avatarY, avatarSize, avatarSize);
 
 	ctx.restore();
