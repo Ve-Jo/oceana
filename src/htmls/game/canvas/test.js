@@ -11,11 +11,41 @@ Canvas.GlobalFonts.loadFontsFromDir("fonts");
 const depth3D = createNoise2D(alea("1"));
 const locationDepth3D = createNoise2D(alea("2"));
 
-export async function WaterBackground({ user, ctx, canvas, fast_mode }) {
-	ctx.fillStyle = "rgb(0, 0, 255)";
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
+export async function WaterBackground({
+	user,
+	canvas,
+	last_coordinates,
+	coordinates_now,
+	fast_mode,
+}) {
+	let canvas_wtr;
+	let coordinate_difference;
+	if (
+		typeof canvas !== "undefined" &&
+		typeof last_coordinates === "object" &&
+		coordinates_now.x === last_coordinates.x &&
+		coordinates_now.y === last_coordinates.y
+	) {
+		console.log("RETURNING ALREADY RENDERED WATER");
+		return [canvas, { x: user.x, y: user.y }];
+	} else {
+		console.log("MAKING NEW WATER");
+		canvas_wtr = Canvas.createCanvas(800, 1400);
 
-	let pixelSize = 4;
+		console.log(coordinates_now.x, coordinates_now.y);
+		console.log(last_coordinates?.x, last_coordinates?.y);
+
+		coordinate_difference = {
+			x: coordinates_now.x - (last_coordinates?.x || 0),
+			y: coordinates_now.y - (last_coordinates?.y || 0),
+		};
+	}
+	const ctx_w = canvas_wtr.getContext("2d");
+
+	ctx_w.fillStyle = "rgb(0, 0, 255)";
+	ctx_w.fillRect(0, 0, canvas_wtr.width, canvas_wtr.height);
+
+	let pixelSize = 6;
 	let scale = 0.002;
 
 	const threshold = 0.001;
@@ -25,8 +55,8 @@ export async function WaterBackground({ user, ctx, canvas, fast_mode }) {
 	let batches = new Map();
 	let currentColor = null;
 
-	for (let y = 0; y < canvas.height; y += pixelSize) {
-		for (let x = 0; x < canvas.width; x += pixelSize) {
+	for (let y = 0; y < canvas_wtr.height; y += pixelSize) {
+		for (let x = 0; x < canvas_wtr.width; x += pixelSize) {
 			const noiseValue = depth3D((x - user.x) * scale, (y - user.y) * scale);
 
 			if (noiseValue < threshold) {
@@ -67,21 +97,22 @@ export async function WaterBackground({ user, ctx, canvas, fast_mode }) {
 			}
 		}
 	}
-	ctx.filter = "none";
+	ctx_w.filter = "none";
 	processBatch(currentColor, batches);
 	function processBatch(color, batches) {
 		if (!color || !batches.has(color)) return;
-		ctx.fillStyle = `rgb(0, ${Math.floor(-140 * color)}, 255)`;
-		ctx.beginPath();
+		ctx_w.fillStyle = `rgb(0, ${Math.floor(-140 * color)}, 255)`;
+		ctx_w.beginPath();
 
 		const batch = batches.get(color);
 		for (const item of batch) {
-			ctx.fillRect(item.x, item.y, item.width, item.height);
+			ctx_w.fillRect(item.x, item.y, item.width, item.height);
 		}
 
-		ctx.closePath();
+		ctx_w.closePath();
 		batches.delete(color);
 	}
+	return [ctx_w, { x: user.x, y: user.y }];
 }
 
 export async function ImagesPrerenderer({
@@ -432,11 +463,18 @@ export async function ImagesPrerender({ interaction }) {
 
 let ui_canvas;
 let all_prerendered;
+let water_prerendered;
 let interaction = null;*/
 
-export default async ({ user, ui_canvas, all_prerendered }) => {
+export default async ({
+	user,
+	ui_canvas,
+	all_prerendered,
+	water_prerendered,
+	water_prerendered_coordinates,
+	water_fast_mode,
+}) => {
 	let less_file_size = false;
-	let water_fast_mode = false;
 
 	/*let user = await User.findOneAndUpdate(
 		{ id: "287275956744355841" },
@@ -468,11 +506,6 @@ export default async ({ user, ui_canvas, all_prerendered }) => {
 		});
 	}
 
-	/*user.boat.rotation = 0;
-	user.x = 0;
-	user.y = 0;
-	user.boat.speed.current = 100;*/
-
 	let canvas = Canvas.createCanvas(800, 1400);
 	let ctx = canvas.getContext("2d");
 
@@ -482,7 +515,14 @@ export default async ({ user, ui_canvas, all_prerendered }) => {
 		noiseValue * 2
 	}%)`;
 
-	await WaterBackground({ user, ctx, canvas, fast_mode: water_fast_mode });
+	let water_prerendered_r = await WaterBackground({
+		user,
+		canvas: water_prerendered,
+		last_coordinates: water_prerendered_coordinates,
+		coordinates_now: { x: user.x, y: user.y },
+		fast_mode: water_fast_mode,
+	});
+	ctx.drawImage(water_prerendered_r[0].canvas, 0, 0);
 
 	ctx.imageSmoothingEnabled = false;
 	let image = await Canvas.loadImage(all_prerendered["boat"]);

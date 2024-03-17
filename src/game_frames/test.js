@@ -6,6 +6,7 @@ import Upgrades from "./../models/UpgradesModel.js";
 import Test, {
 	ImagesPrerender,
 	UIRender,
+	WaterBackground,
 } from "./../htmls/game/canvas/test.js";
 
 export default async (client, interaction, collector) => {
@@ -36,24 +37,35 @@ export default async (client, interaction, collector) => {
 
 	let ui_canvas;
 	let all_prerendered;
+	let water_prerendered;
+	let water_prerendered_coordinates = { x: 0, y: 0 };
+	let water_fast_mode = true;
 
 	async function update() {
-		console.time("entire update");
-		console.time("image prerender");
 		all_prerendered = await ImagesPrerender({ interaction });
-		console.timeEnd("image prerender");
-		console.time("ui render");
 		ui_canvas = await UIRender({ user, ctx_ui: ui_canvas, all_prerendered });
-		console.timeEnd("ui render");
-		console.time("canvas render");
-		let result = await Test({ user, ui_canvas, all_prerendered });
-		console.timeEnd("canvas render");
-		console.time("attachment creation");
+		await WaterBackground({
+			user,
+			canvas: water_prerendered,
+			coordinates_now: { x: user.x, y: user.y },
+			last_coordinates: water_prerendered_coordinates,
+			fast_mode: water_fast_mode,
+		}).then((res) => {
+			water_prerendered = res[0];
+			water_prerendered_coordinates = res[1];
+		});
+		let result = await Test({
+			user,
+			ui_canvas,
+			all_prerendered,
+			water_prerendered,
+			water_prerendered_coordinates,
+			water_fast_mode,
+		});
+
 		const attachment = new AttachmentBuilder(result, {
 			name: "screenshot.png",
 		});
-		console.timeEnd("attachment creation");
-		console.time("message building and sending");
 
 		let control_buttons = [
 			["↖️", "⬆️", "↗️"],
@@ -77,17 +89,17 @@ export default async (client, interaction, collector) => {
 				.setCustomId("game_rotateright")
 				.setEmoji(control_buttons[control_ready][2])
 				.setStyle(1),
+			new ButtonBuilder()
+				.setCustomId("game_fastmode")
+				.setEmoji("🚀")
+				.setStyle(1),
 		]);
 
 		await interaction.editReply({
-			content: "",
 			embeds: [],
 			files: [attachment],
 			components: [controls],
-			ephemeral: false,
 		});
-		console.timeEnd("message building and sending");
-		console.timeEnd("entire update");
 	}
 	await update();
 
