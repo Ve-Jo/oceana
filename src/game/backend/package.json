@@ -1,0 +1,20 @@
+{
+	"name": "getting-starter-activity-server",
+	"version": "1.0.0",
+	"description": "",
+	"main": "server.js",
+	"type": "module",
+	"scripts": {
+		"dev": "bun server.js",
+		"tunnel": "cloudflared tunnel --url http://localhost:5173"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"cross-fetch": "^4.0.0",
+		"dotenv": "^16.4.1",
+		"express": "^4.18.2",
+		"node-fetch": "^3.3.2"
+	}
+}
