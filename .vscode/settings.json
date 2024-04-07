@@ -1,0 +1,49 @@
+{
+	"workbench.colorCustomizations": {
+		"minimap.background": "#00000000",
+		"scrollbar.shadow": "#00000000"
+	},
+	"continue.enableTabAutocomplete": true,
+	"folder-color.pathColors": [
+		{
+			"folderPath": "oceana/src/htmls/sources/",
+			"color": "foldercolorizer.Purple",
+			"badge": "🖼️"
+		},
+		{
+			"folderPath": "oceana/index.js/",
+			"badge": "▶️"
+		},
+		{
+			"folderPath": "oceana/.env/",
+			"badge": "⭐"
+		},
+		{
+			"folderPath": "oceana/src/modules/",
+			"color": "foldercolorizer.CarrotOrange"
+		},
+		{
+			"folderPath": "oceana/src/cmds/",
+			"color": "foldercolorizer.orange"
+		},
+		{
+			"folderPath": "oceana/src/game_frames/",
+			"color": "foldercolorizer.OrangeRed"
+		},
+		{
+			"folderPath": "oceana/Dockerfile/",
+			"badge": "⏯️"
+		},
+		{
+			"folderPath": "oceana/src/htmls/game/canvas/",
+			"color": "foldercolorizer.SandyTan"
+		},
+		{
+			"folderPath": "oceana/src/htmls/game/",
+			"color": "foldercolorizer.LightSalmon"
+		}
+	],
+	"files.associations": {
+		"*.css": "tailwindcss"
+	}
+}

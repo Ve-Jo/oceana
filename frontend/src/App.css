@@ -1,0 +1,39 @@
+@import url("https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Overpass:ital,wght@0,100..900;1,100..900&display=swap");
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes borderFade {
+	0% {
+		border-color: rgba(255, 255, 255, 0.3);
+	}
+	50% {
+		border-color: rgba(255, 255, 255, 1);
+	}
+	100% {
+		border-color: rgba(255, 255, 255, 0.3);
+	}
+}
+
+.border-animation {
+	animation: borderFade 2s infinite;
+}
+
+.fade-in {
+	animation: fadeIn 1s ease-in-out;
+}
+
+* {
+	font-family: "Jost", sans-serif;
+}
+
+html {
+	height: 100%;
+	background: linear-gradient(rgb(98, 186, 244), rgb(44, 140, 208));
+}
