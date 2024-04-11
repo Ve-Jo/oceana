@@ -1,8 +1,32 @@
-import "./App.css";
+import React, { useState, useEffect } from "react";
+import "./Menu.css";
+import getUserInfo from "../../modules/getUserInfo.js";
 
-function App() {
+function Menu({ setCurrentPage, access_token }) {
+	const [currentUser, setCurrentUser] = useState(null);
+
+	useEffect(() => {
+		if (access_token) {
+			// Call getUserInfo only if access_token is available
+			getUserInfo(access_token)
+				.then((userInfo) => {
+					setCurrentUser(userInfo);
+				})
+				.catch((error) => {
+					console.error("Error fetching user info:", error);
+				});
+		} else {
+			console.log("access_token is ", access_token);
+		}
+	}, [access_token]);
+
+	if (!currentUser) {
+		return <div>Loading...</div>;
+	}
+
 	return (
 		<>
+			<div id="background" className="absolute w-full"></div>
 			<img
 				id="Discord"
 				alt="Discord"
@@ -19,11 +43,12 @@ function App() {
 					src="./../public/discord_avatar.png"
 					className="rounded-cool h-[10vw] w-[10vw] fade-in transition-all duration-300 transform hover:scale-110"
 				/>
-				<p id="hello" className="mx-2 fade-in"></p>
+				<p id="hello" className="mx-2 fade-in">
+					{currentUser && `👋 Привет, ${currentUser.username}!`}
+				</p>
 			</div>
 			<div>
 				<p className="fixed text-5xl left-[57%] top-32 rotate-12 fade-in">🎣</p>
-
 				<h1 className="relative text-8xl font-semibold text-white text-center top-32">
 					Oceana
 				</h1>
@@ -31,10 +56,11 @@ function App() {
 					🟢 1h 20m 30s
 				</p>
 			</div>
-			<div className="relative top-[25vw] text-center fade-in">
+			<div className="relative top-[45vh] text-center fade-in">
 				<button
 					id="play"
 					className="bg-blue-500 hover:bg-blue-800 text-white font-bold p-[4vw] py-[3vw] rounded-cool text-4xl transition-all duration-300 transform hover:scale-110"
+					onClick={() => setCurrentPage("game")}
 				>
 					Играть
 				</button>
@@ -43,4 +69,4 @@ function App() {
 	);
 }
 
-export default App;
+export default Menu;

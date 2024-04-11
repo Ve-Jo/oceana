@@ -1,7 +1,8 @@
 import fs from "fs";
 import dotenv from "dotenv";
 import path from "path";
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
+dotenv.config({path: path.resolve(process.cwd(), "./../.env")})
 
 fs.readdirSync("src").forEach(async (file) => {
 	if (file.endsWith(".js")) {

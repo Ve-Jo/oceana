@@ -1,6 +1,9 @@
 import { Client, GatewayIntentBits, Options } from "discord.js";
-import "dotenv/config";
+import dotenv from "dotenv";
 import fs from "fs";
+import path from "path"
+
+dotenv.config({path: path.resolve(process.cwd(), "./../.env")})
 
 const client = new Client({
 	intents: [GatewayIntentBits.Guilds],

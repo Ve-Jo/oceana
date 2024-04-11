@@ -33,7 +33,8 @@
 	font-family: "Jost", sans-serif;
 }
 
-html {
+#background {
+	width: 100%;
 	height: 100%;
 	background: linear-gradient(rgb(98, 186, 244), rgb(44, 140, 208));
 }
