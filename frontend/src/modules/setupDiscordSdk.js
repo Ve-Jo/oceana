@@ -1,36 +1,53 @@
 import { DiscordSDK } from "@discord/embedded-app-sdk";
 
-const discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
+let auth;
+let initializationPromise;
 
-export default async function setupDiscordSdk() {
-	try {
-		await discordSdk.ready();
+export default function setupDiscordSdk() {
+	if (!initializationPromise) {
+		initializationPromise = new Promise(async (resolve, reject) => {
+			try {
+				let discordSdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
 
-		const { code } = await discordSdk.commands.authorize({
-			client_id: import.meta.env.VITE_DISCORD_CLIENT_ID,
-			response_type: "code",
-			state: "",
-			prompt: "none",
-			scope: ["identify", "guilds"],
+				await discordSdk.ready();
+				console.log("Discord SDK is ready");
+
+				const { code } = await discordSdk.commands.authorize({
+					client_id: import.meta.env.VITE_DISCORD_CLIENT_ID,
+					response_type: "code",
+					state: "",
+					prompt: "none",
+					scope: ["identify", "guilds"],
+				});
+
+				const response = await fetch("/api/token", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						code,
+					}),
+				});
+				const { access_token } = await response.json();
+
+				auth = await discordSdk.commands.authenticate({
+					access_token,
+				});
+
+				if (auth == null) {
+					throw new Error("Authenticate command failed");
+				}
+
+				console.log(auth);
+
+				resolve(auth);
+			} catch (error) {
+				console.error("Error during setupDiscordSdk:", error);
+				reject(error);
+			}
 		});
-
-		console.log("fetching response...");
-
-		// Retrieve an access_token from your activity's server
-		const response = await fetch("/api/token", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				code,
-			}),
-		});
-		const access_token = await response.json();
-
-		return access_token;
-	} catch (error) {
-		console.error("Error during setupDiscordSdk:", error);
-		throw error;
 	}
+
+	return initializationPromise;
 }
