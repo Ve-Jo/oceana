@@ -25,7 +25,9 @@ function App() {
 			{currentPage === "menu" && (
 				<Menu setCurrentPage={setCurrentPage} access_token={access_token} />
 			)}
-			{currentPage === "game" && <Game />}
+			{currentPage === "game" && (
+				<Game setCurrentPage={setCurrentPage} access_token={access_token} />
+			)}
 		</React.Fragment>
 	);
 }
