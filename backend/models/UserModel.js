@@ -1,6 +1,20 @@
 import mongoose from "mongoose";
 import autopopulate from "mongoose-autopopulate";
 
+import Boat from "../models/BoatModel.js";
+import Upgrades from "../models/UpgradesModel.js";
+import World from "../models/WorldModel.js";
+
+if (mongoose.models && !mongoose.models.Boat) {
+	mongoose.model("Boat", Boat);
+}
+if (mongoose.models && !mongoose.models.Upgrades) {
+	mongoose.model("Upgrades", Upgrades);
+}
+if (mongoose.models && !mongoose.models.World) {
+	mongoose.model("World", World);
+}
+
 const UserSchema = new mongoose.Schema({
 	id: { type: Number, required: true, unique: true },
 	ui_updated: { type: Number, default: 0, required: true },
