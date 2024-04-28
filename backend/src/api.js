@@ -1,15 +1,11 @@
 import express from "express";
 import fetch from "node-fetch";
 
-const app = express();
-const port = 3001;
-
 export default {
-	data: { app: app, port: port },
-	async execute() {
-		app.use(express.json());
+	async execute(app, port) {
+		const router = express.Router();
 
-		app.post("/api/token", async (req, res) => {
+		router.post("/token", async (req, res) => {
 			console.log("catching request", req.body.code);
 			const response = await fetch(`https://discord.com/api/oauth2/token`, {
 				method: "POST",
@@ -27,6 +23,8 @@ export default {
 			const { access_token } = await response.json();
 			res.send({ access_token });
 		});
+
+		app.use("/api", router);
 
 		app.listen(port, () => {
 			console.log(`Server listening at http://localhost:${port}`);
