@@ -26,6 +26,15 @@ function Game({ setCurrentPage, access_token }) {
 	const canvasSize = { width: screenSize.x, height: screenSize.y };
 	const [latestMultiplayerCheck, multiplayerCheck] = useState(0);
 
+	const [left_notifications_placement, setLeftNotificationsPlacement] =
+		useState({
+			x: 0,
+			y: 0,
+			rotate: 0,
+			mode: 0,
+			transparency: 1,
+		});
+
 	useEffect(() => {
 		const handleResize = () => {
 			setScreenSize({ x: window.innerWidth, y: window.innerHeight });
@@ -314,6 +323,8 @@ function Game({ setCurrentPage, access_token }) {
 			let newSpeed = speed;
 			let newRotationSpeed = rotationSpeed;
 
+			let CurrentLeftNotificationsPlacement = left_notifications_placement;
+
 			const rotationThreshold = 5; // Adjust as needed
 			const speedThreshold = 0.1; // Adjust as needed
 
@@ -334,15 +345,19 @@ function Game({ setCurrentPage, access_token }) {
 					if (newRotationSpeed < 0) newRotationSpeed += 1;
 					newRotationSpeed += 0.1;
 					newRotation += newRotationSpeed;
-				} else if (keyState.ArrowLeft) {
+				}
+				if (keyState.ArrowLeft) {
 					if (newRotationSpeed > 0) newRotationSpeed -= 1;
 					newRotationSpeed -= 0.1;
 					newRotation += newRotationSpeed;
 				}
 
 				//360-0 switch
-				if (newRotation >= 360) newRotation -= 360;
-				if (newRotation < 0) newRotation += 360;
+				if (newRotation >= 360) {
+					newRotation -= 360;
+				} else if (newRotation < 0) {
+					newRotation += 360;
+				}
 			} else {
 				//setting to 0 if not turning
 				if (newRotationSpeed < 0) newRotationSpeed += 0.15;
@@ -400,6 +415,64 @@ function Game({ setCurrentPage, access_token }) {
 
 			setSpeed(newSpeed);
 			setRotationSpeed(newRotationSpeed);
+
+			const notification_rotations = [0, 45, 90, 135, 180, 225, 270, 315, 360];
+			const notification_snappy = [
+				{ rotate: 0, x: 15, y: -50 },
+				{ rotate: -45, x: -20, y: 15 },
+				{ rotate: 0, x: -75, y: 45 },
+				{ rotate: 45, x: -135, y: 5 },
+				{ rotate: 0, x: -175, y: -55 },
+				{ rotate: -45, x: -145, y: -105 },
+				{ rotate: 0, x: -75, y: -135 },
+				{ rotate: 45, x: -20, y: -115 },
+				{ rotate: 0, x: 15, y: -50 },
+			];
+
+			for (let i = 0; i < notification_snappy.length; i++) {
+				if (
+					(Math.abs(newRotation >= notification_rotations[i] - 33) &&
+						Math.abs(newRotation <= notification_rotations[i] + 33)) ||
+					(Math.abs(newRotation + 360 >= notification_rotations[i] - 33) &&
+						Math.abs(newRotation + 360 <= notification_rotations[i] + 33))
+				) {
+					let NewLeftNotificationsPlacement = notification_snappy[i];
+
+					if (
+						Math.abs(
+							NewLeftNotificationsPlacement.rotate -
+								CurrentLeftNotificationsPlacement.rotate,
+						) < 1
+					) {
+						CurrentLeftNotificationsPlacement.transparency = 1;
+						break;
+					}
+
+					let diff =
+						NewLeftNotificationsPlacement.rotate -
+						CurrentLeftNotificationsPlacement.rotate;
+
+					let diffX =
+						NewLeftNotificationsPlacement.x -
+						CurrentLeftNotificationsPlacement.x;
+					let diffY =
+						NewLeftNotificationsPlacement.y -
+						CurrentLeftNotificationsPlacement.y;
+
+					CurrentLeftNotificationsPlacement.rotate += diff / 30;
+					CurrentLeftNotificationsPlacement.x += diffX / 20;
+					CurrentLeftNotificationsPlacement.y += diffY / 20;
+
+					CurrentLeftNotificationsPlacement.transparency = 0.5;
+
+					console.log(
+						`NEW ROTATION: (${NewLeftNotificationsPlacement.rotate}) (${CurrentLeftNotificationsPlacement.rotate})`,
+					);
+
+					setLeftNotificationsPlacement(CurrentLeftNotificationsPlacement);
+					break;
+				}
+			}
 
 			// Snap newRotation to the nearest multiple of 90 if it's close
 			if (Math.abs(newRotation - 90) < rotationThreshold) {
@@ -462,18 +535,55 @@ function Game({ setCurrentPage, access_token }) {
 			id="background-g"
 			className="absolute top-0 left-0 flex items-center justify-center w-full h-full"
 		>
-			<img
-				src="boat.png"
-				alt="boat"
-				className="w-10"
-				style={{
-					position: "absolute",
-					left: `calc(50% - 5px)`,
-					top: `calc(50% - 5px)`,
-					imageRendering: "pixelated",
-					transform: `rotate(${boatInfo.boat.rotation}deg)`,
-				}}
-			/>
+			<div id="boat">
+				<div
+					id="notifications_left"
+					className="absolute text-white"
+					style={{
+						position: "absolute",
+						marginTop: `${50 + left_notifications_placement.y}px`,
+						marginLeft: `${50 + left_notifications_placement.x}px`,
+						left: `calc(50% - 25px)`,
+						top: `calc(50% - 25px)`,
+						width: "auto",
+						opacity: `${left_notifications_placement.transparency}`,
+						transform: `rotate(${Math.floor(left_notifications_placement.rotate + rotationSpeed * 4)}deg)`,
+					}}
+				>
+					<p
+						className="mb-2"
+						style={{
+							backgroundColor: "rgba(0, 0, 0, 0.5)",
+							borderRadius: "10px",
+							padding: "10px",
+						}}
+					>
+						Hello world!!!!
+					</p>
+					<p
+						className="mb-2"
+						style={{
+							backgroundColor: "rgba(0, 0, 0, 0.5)",
+							borderRadius: "10px",
+							padding: "10px",
+						}}
+					>
+						Hello world!!!!
+					</p>
+				</div>
+				<img
+					src="boat.png"
+					alt="boat"
+					className="w-10"
+					style={{
+						position: "absolute",
+						left: `calc(50% - 25px)`,
+						top: `calc(50% - 25px)`,
+						imageRendering: "pixelated",
+						transform: `rotate(${boatInfo.boat.rotation}deg)`,
+					}}
+				/>
+			</div>
 			<div className="absolute top-0 right-0 p-4">
 				<h3 className="text-white">Boat Information</h3>
 				<p className="text-white">X: {boatInfo.x.toFixed(1)}</p>
@@ -482,9 +592,17 @@ function Game({ setCurrentPage, access_token }) {
 					Rotation: {boatInfo.boat.rotation.toFixed(1)}
 				</p>
 				<p className="text-white">Speed: {speed.toFixed(1)}</p>
+				<p className="text-white">
+					Test: {left_notifications_placement.x.toFixed(1)}{" "}
+					{left_notifications_placement.y.toFixed(1)}{" "}
+					{left_notifications_placement.rotate.toFixed(1)}{" "}
+					{left_notifications_placement.transparency.toFixed(1)}
+				</p>
+				<p>Rotate speed: {rotationSpeed.toFixed(1)}</p>
 			</div>
 			<WaterBackground
 				canvasSize={canvasSize}
+				realSize={screenSize}
 				player_x={boatInfo.x}
 				player_y={boatInfo.y}
 			/>
