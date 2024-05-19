@@ -2,6 +2,10 @@ import React, { useEffect, useState, useRef } from "react";
 import "./Game.css";
 import { Noise } from "noisejs";
 
+import WindowResize from "../../components/WindowResize";
+import BoatInfo from "../../components/BoatInfo";
+import GameKeyboardControls from "../../components/GameKeyboardControls";
+
 function Game({ setCurrentPage, access_token }) {
 	//MARK: Use states
 	const [boatInfo, setBoatInfo] = useState({
@@ -15,97 +19,39 @@ function Game({ setCurrentPage, access_token }) {
 	});
 
 	const [keyState, setKeyState] = useState({});
-
 	const [speed, setSpeed] = useState(0);
 	const [rotationSpeed, setRotationSpeed] = useState(0);
 
-	const [screenSize, setScreenSize] = useState({
+	const [leftNotificationsPlacement, setLeftNotificationsPlacement] = useState({
+		x: 15,
+		y: -50,
+		rotate: 0,
+		mode: 0,
+		transparency: 1,
+	});
+
+	const [screenSize, setScreenSize] = React.useState({
 		x: window.innerWidth,
 		y: window.innerHeight,
 	});
-	const canvasSize = { width: screenSize.x, height: screenSize.y };
-	const [latestMultiplayerCheck, multiplayerCheck] = useState(0);
 
-	const [left_notifications_placement, setLeftNotificationsPlacement] =
-		useState({
-			x: 0,
-			y: 0,
-			rotate: 0,
-			mode: 0,
-			transparency: 1,
-		});
+	WindowResize({ screenSize, setScreenSize });
 
-	useEffect(() => {
-		const handleResize = () => {
-			setScreenSize({ x: window.innerWidth, y: window.innerHeight });
-		};
+	BoatInfo(access_token);
 
-		const handleBeforeUnload = () => {
-			savePlayerInformation();
-		};
+	GameKeyboardControls({
+		boatInfo: { boatInfo, setBoatInfo },
+		speed: { speed, setSpeed },
+		rotationSpeed: { rotationSpeed, setRotationSpeed },
+		leftNotificationsPlacement: {
+			leftNotificationsPlacement,
+			setLeftNotificationsPlacement,
+		},
+		keyState: { keyState, setKeyState },
+	});
 
-		window.addEventListener("resize", handleResize);
-		window.addEventListener("beforeunload", handleBeforeUnload);
-
-		return () => {
-			window.removeEventListener("resize", handleResize);
-			window.removeEventListener("beforeunload", handleBeforeUnload);
-		};
-	}, []);
-
-	const createPlayerMultiplayer = async (access_token, data) => {
-		try {
-			console.log(`UPDATING DATA WITH BOAT ROTATION: `);
-			console.log(`${data.boat.rotation}`);
-			const response = await fetch(`/api/multiplayer`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					user_id: access_token.user.id,
-					x: data.x,
-					y: data.y,
-					boat: { rotation: data.boat.rotation },
-				}),
-			});
-			if (!response.ok) {
-				throw new Error("Failed to create player");
-			}
-			console.log("Player created successfully");
-		} catch (error) {
-			console.error("Error creating player:", error);
-		}
-	};
-
-	// MARK: Boat information
-	useEffect(() => {
-		const fetchBoatInfo = async () => {
-			try {
-				const response = await fetch(`/api/users/${access_token.user.id}`);
-				if (!response.ok) {
-					throw new Error("Failed to fetch boat information");
-				}
-				const data = await response.json();
-				if (!data) {
-					fetchBoatInfo();
-				} else {
-					setBoatInfo(data);
-					await createPlayerMultiplayer(access_token, data);
-				}
-			} catch (error) {
-				console.error(error);
-			}
-		};
-
-		fetchBoatInfo();
-	}, [access_token]);
-
-	const savePlayerInformation = () => {
-		//MARK: TODO: Save
-	};
-
-	const getDistance = (x1, y1, x2, y2) => {
+	//MARK: Closest players
+	/*const getDistance = (x1, y1, x2, y2) => {
 		// Calculate the Euclidean distance between two points
 		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 	};
@@ -142,17 +88,18 @@ function Game({ setCurrentPage, access_token }) {
 			console.error("Error fetching player data:", error);
 			return [];
 		}
-	};
+	};*/
+
+	const [cachedWaterChunks, setCachedWaterChunks] = useState({});
 
 	//MARK: Water background
-	function WaterBackground({ canvasSize, player_x, player_y, fast_mode }) {
+	/*function WaterBackground({ canvasSize, player_x, player_y, fast_mode }) {
 		const canvasRef = useRef(null);
 
 		fast_mode = true;
 
 		function hsvToRgb(h, s, v) {
 			let r, g, b;
-
 			const i = Math.floor(h * 6);
 			const f = h * 6 - i;
 			const p = v * (1 - s);
@@ -312,222 +259,7 @@ function Game({ setCurrentPage, access_token }) {
 		}, [canvasSize, player_x, player_y]);
 
 		return <canvas ref={canvasRef} />;
-	}
-
-	//MARK: Keyboard controls
-	useEffect(() => {
-		const handleKeyPress = () => {
-			let newX = boatInfo.x;
-			let newY = boatInfo.y;
-			let newRotation = boatInfo.boat.rotation;
-			let newSpeed = speed;
-			let newRotationSpeed = rotationSpeed;
-
-			let CurrentLeftNotificationsPlacement = left_notifications_placement;
-
-			const rotationThreshold = 5; // Adjust as needed
-			const speedThreshold = 0.1; // Adjust as needed
-
-			const rotation_snappy = [90, 180, 270, 360, 0, 45, 135, 225, 315];
-			const rotation_max_to_span = 10;
-
-			if (keyState.ArrowLeft || keyState.ArrowRight) {
-				//limits
-				if (newRotationSpeed >= boatInfo.boat.rotation_speed.max) {
-					newRotationSpeed = boatInfo.boat.rotation_speed.max;
-				}
-				if (newRotationSpeed <= -boatInfo.boat.rotation_speed.max) {
-					newRotationSpeed = -boatInfo.boat.rotation_speed.max;
-				}
-
-				//right and left
-				if (keyState.ArrowRight) {
-					if (newRotationSpeed < 0) newRotationSpeed += 1;
-					newRotationSpeed += 0.1;
-					newRotation += newRotationSpeed;
-				}
-				if (keyState.ArrowLeft) {
-					if (newRotationSpeed > 0) newRotationSpeed -= 1;
-					newRotationSpeed -= 0.1;
-					newRotation += newRotationSpeed;
-				}
-
-				//360-0 switch
-				if (newRotation >= 360) {
-					newRotation -= 360;
-				} else if (newRotation < 0) {
-					newRotation += 360;
-				}
-			} else {
-				//setting to 0 if not turning
-				if (newRotationSpeed < 0) newRotationSpeed += 0.15;
-				if (newRotationSpeed > 0) newRotationSpeed -= 0.15;
-				newRotation += newRotationSpeed / 4;
-
-				let diff;
-				for (let i = 0; i < rotation_snappy.length; i++) {
-					if (
-						newRotation >= rotation_snappy[i] - rotation_max_to_span &&
-						newRotation <= rotation_snappy[i] + rotation_max_to_span
-					) {
-						diff = newRotation - rotation_snappy[i];
-						newRotation -= diff / 8;
-					}
-				}
-
-				//normalize to 0
-				if (newRotationSpeed <= 0.2 && newRotationSpeed >= -0.2)
-					newRotationSpeed = 0;
-			}
-
-			if (keyState.ArrowUp || keyState.ArrowDown) {
-				if (keyState.ArrowUp) {
-					newSpeed += 0.1;
-					if (newSpeed >= boatInfo.boat.speed.max) {
-						newSpeed = boatInfo.boat.speed.max;
-					}
-				} else if (keyState.ArrowDown) {
-					if (newSpeed > 0) newSpeed -= 0.1;
-					newSpeed -= 0.05;
-					if (newSpeed <= -boatInfo.boat.speed.max) {
-						newSpeed = -boatInfo.boat.speed.max;
-					}
-				}
-			} else {
-				if (newSpeed < 0) newSpeed += 0.05;
-				if (newSpeed > 0) newSpeed -= 0.05;
-
-				if (newSpeed < 0.5 && newSpeed > -0.5) newSpeed = 0;
-			}
-
-			newX += Math.sin((newRotation * Math.PI) / 180) * newSpeed;
-			newY -= Math.cos((newRotation * Math.PI) / 180) * newSpeed;
-
-			setBoatInfo({
-				...boatInfo,
-				x: newX,
-				y: newY,
-				boat: {
-					...boatInfo.boat,
-					rotation: newRotation,
-				},
-			});
-
-			setSpeed(newSpeed);
-			setRotationSpeed(newRotationSpeed);
-
-			const notification_rotations = [0, 45, 90, 135, 180, 225, 270, 315, 360];
-			const notification_snappy = [
-				{ rotate: 0, x: 15, y: -50 },
-				{ rotate: -45, x: -20, y: 15 },
-				{ rotate: 0, x: -75, y: 45 },
-				{ rotate: 45, x: -135, y: 5 },
-				{ rotate: 0, x: -175, y: -55 },
-				{ rotate: -45, x: -145, y: -105 },
-				{ rotate: 0, x: -75, y: -135 },
-				{ rotate: 45, x: -20, y: -115 },
-				{ rotate: 0, x: 15, y: -50 },
-			];
-
-			for (let i = 0; i < notification_snappy.length; i++) {
-				if (
-					(Math.abs(newRotation >= notification_rotations[i] - 33) &&
-						Math.abs(newRotation <= notification_rotations[i] + 33)) ||
-					(Math.abs(newRotation + 360 >= notification_rotations[i] - 33) &&
-						Math.abs(newRotation + 360 <= notification_rotations[i] + 33))
-				) {
-					let NewLeftNotificationsPlacement = notification_snappy[i];
-
-					if (
-						Math.abs(
-							NewLeftNotificationsPlacement.rotate -
-								CurrentLeftNotificationsPlacement.rotate,
-						) < 1
-					) {
-						CurrentLeftNotificationsPlacement.transparency = 1;
-						break;
-					}
-
-					let diff =
-						NewLeftNotificationsPlacement.rotate -
-						CurrentLeftNotificationsPlacement.rotate;
-
-					let diffX =
-						NewLeftNotificationsPlacement.x -
-						CurrentLeftNotificationsPlacement.x;
-					let diffY =
-						NewLeftNotificationsPlacement.y -
-						CurrentLeftNotificationsPlacement.y;
-
-					CurrentLeftNotificationsPlacement.rotate += diff / 30;
-					CurrentLeftNotificationsPlacement.x += diffX / 20;
-					CurrentLeftNotificationsPlacement.y += diffY / 20;
-
-					CurrentLeftNotificationsPlacement.transparency = 0.5;
-
-					console.log(
-						`NEW ROTATION: (${NewLeftNotificationsPlacement.rotate}) (${CurrentLeftNotificationsPlacement.rotate})`,
-					);
-
-					setLeftNotificationsPlacement(CurrentLeftNotificationsPlacement);
-					break;
-				}
-			}
-
-			// Snap newRotation to the nearest multiple of 90 if it's close
-			if (Math.abs(newRotation - 90) < rotationThreshold) {
-				newRotation = 90;
-			} else if (Math.abs(newRotation - 180) < rotationThreshold) {
-				newRotation = 180;
-			} else if (Math.abs(newRotation - 270) < rotationThreshold) {
-				newRotation = 270;
-			} else if (Math.abs(newRotation - 360) < rotationThreshold) {
-				newRotation = 0;
-			}
-
-			// Snap newSpeed to 0 if it's close
-			if (Math.abs(newSpeed) < speedThreshold) {
-				newSpeed = 0;
-			}
-		};
-
-		const handleKeyDown = (event) => {
-			if (!keyState[event.key]) {
-				setKeyState((prevState) => ({
-					...prevState,
-					[event.key]: true,
-				}));
-
-				if (latestMultiplayerCheck + 10000 < Date.now()) {
-					let res = getClosestPlayers();
-					if (res) {
-						console.log(`CLOSEST PLAYERS: `);
-						console.log(res);
-						createPlayerMultiplayer(access_token, boatInfo);
-					}
-					multiplayerCheck(Date.now());
-				}
-			}
-		};
-
-		const handleKeyUp = (event) => {
-			setKeyState((prevState) => ({
-				...prevState,
-				[event.key]: false,
-			}));
-		};
-
-		const interval = setInterval(handleKeyPress, 1000 / 60);
-
-		window.addEventListener("keydown", handleKeyDown);
-		window.addEventListener("keyup", handleKeyUp);
-
-		return () => {
-			clearInterval(interval);
-			window.removeEventListener("keydown", handleKeyDown);
-			window.removeEventListener("keyup", handleKeyUp);
-		};
-	}, [keyState, boatInfo, speed, rotationSpeed]);
+	}*/
 
 	//MARK: HTML
 	return (
@@ -541,13 +273,13 @@ function Game({ setCurrentPage, access_token }) {
 					className="absolute text-white"
 					style={{
 						position: "absolute",
-						marginTop: `${50 + left_notifications_placement.y}px`,
-						marginLeft: `${50 + left_notifications_placement.x}px`,
+						marginTop: `${50 + leftNotificationsPlacement.y}px`,
+						marginLeft: `${50 + leftNotificationsPlacement.x}px`,
 						left: `calc(50% - 25px)`,
 						top: `calc(50% - 25px)`,
 						width: "auto",
-						opacity: `${left_notifications_placement.transparency}`,
-						transform: `rotate(${Math.floor(left_notifications_placement.rotate + rotationSpeed * 4)}deg)`,
+						opacity: `${leftNotificationsPlacement.transparency}`,
+						transform: `rotate(${Math.floor(leftNotificationsPlacement.rotate + rotationSpeed * 4)}deg)`,
 					}}
 				>
 					<p
@@ -593,19 +325,13 @@ function Game({ setCurrentPage, access_token }) {
 				</p>
 				<p className="text-white">Speed: {speed.toFixed(1)}</p>
 				<p className="text-white">
-					Test: {left_notifications_placement.x.toFixed(1)}{" "}
-					{left_notifications_placement.y.toFixed(1)}{" "}
-					{left_notifications_placement.rotate.toFixed(1)}{" "}
-					{left_notifications_placement.transparency.toFixed(1)}
+					Test: {leftNotificationsPlacement.x.toFixed(1)}{" "}
+					{leftNotificationsPlacement.y.toFixed(1)}{" "}
+					{leftNotificationsPlacement.rotate.toFixed(1)}{" "}
+					{leftNotificationsPlacement.transparency.toFixed(1)}
 				</p>
 				<p>Rotate speed: {rotationSpeed.toFixed(1)}</p>
 			</div>
-			<WaterBackground
-				canvasSize={canvasSize}
-				realSize={screenSize}
-				player_x={boatInfo.x}
-				player_y={boatInfo.y}
-			/>
 		</div>
 	);
 }
