@@ -36,7 +36,7 @@ export default function BoatInfo(access_token) {
 				const data = await response.json();
 				if (data) {
 					/*setBoatInfo(data);*/
-					await createPlayerMultiplayer(access_token, data);
+					/*await createPlayerMultiplayer(access_token, data);*/
 				}
 			} catch (error) {
 				console.error(error);
