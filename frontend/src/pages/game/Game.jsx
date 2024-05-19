@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./Game.css";
-import { Noise } from "noisejs";
 
 import WindowResize from "../../components/WindowResize";
 import BoatInfo from "../../components/BoatInfo";
 import GameKeyboardControls from "../../components/GameKeyboardControls";
+import WaterBackgroundChunk from "../../components/WaterBackgroundChunk";
 
 function Game({ setCurrentPage, access_token }) {
 	//MARK: Use states
@@ -34,6 +34,9 @@ function Game({ setCurrentPage, access_token }) {
 		x: window.innerWidth,
 		y: window.innerHeight,
 	});
+
+	const [savedBackgroundChunks, setSavedBackgroundChunks] = useState({});
+	const [currentPlayerChunkId, setCurrentPlayerChunkId] = useState([0, 0]);
 
 	WindowResize({ screenSize, setScreenSize });
 
@@ -261,6 +264,16 @@ function Game({ setCurrentPage, access_token }) {
 		return <canvas ref={canvasRef} />;
 	}*/
 
+	/*{WaterBackground({
+				screen: { screenSize, setScreenSize },
+				boatInfo: { boatInfo, setBoatInfo },
+				savedBackgroundChunks: {
+					savedBackgroundChunks,
+					setSavedBackgroundChunks,
+				},
+				currentPlayerChunkId: { currentPlayerChunkId, setCurrentPlayerChunkId },
+			})}*/
+
 	//MARK: HTML
 	return (
 		<div
@@ -332,6 +345,15 @@ function Game({ setCurrentPage, access_token }) {
 				</p>
 				<p>Rotate speed: {rotationSpeed.toFixed(1)}</p>
 			</div>
+			<WaterBackgroundChunk
+				screen={{ screenSize, setScreenSize }}
+				boatInfo={{ boatInfo, setBoatInfo }}
+				savedBackgroundChunks={{
+					savedBackgroundChunks,
+					setSavedBackgroundChunks,
+				}}
+				currentPlayerChunkId={{ currentPlayerChunkId, setCurrentPlayerChunkId }}
+			/>
 		</div>
 	);
 }
