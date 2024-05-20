@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Noise } from "noisejs";
 
 const noise = new Noise(1);
@@ -48,7 +48,7 @@ function hsvToRgb(h, s, v) {
 	return { r: r * 255, g: g * 255, b: b * 255 };
 }
 
-async function WaterBackgroundChunkRenderer(x, y, chunkSize) {
+function WaterBackgroundChunkRenderer(x, y, chunkSize, boatInfo, offset) {
 	const canvas = document.createElement("canvas");
 	const ctx = canvas.getContext("2d");
 
@@ -61,39 +61,32 @@ async function WaterBackgroundChunkRenderer(x, y, chunkSize) {
 	const pixelSize = 8;
 	const threshold = 0.1;
 	const colorBucketSize = 0.1;
-	const mergeDistance = pixelSize * 5;
+	const mergeDistance = pixelSize * 1;
 
 	let batches = new Map();
 	let currentColor = null;
 
-	for (let i = 0; i < chunkSize; i++) {
-		for (let j = 0; j < chunkSize; j++) {
+	let r, g, b;
+
+	for (let i = 0; i < chunkSize; i += pixelSize) {
+		for (let j = 0; j < chunkSize; j += pixelSize) {
 			const noiseValue = noise.perlin2(
 				(x * chunkSize + i) * noiseScale,
 				(y * chunkSize + j) * noiseScale,
 			);
-			const noise2Value = noise2.perlin2(
-				x * colorNoiseScale,
-				y * colorNoiseScale,
-			);
+			const noise2Value = /*noise2.perlin2(
+				(x * chunkSize + i) * colorNoiseScale,
+				(y * chunkSize + j) * colorNoiseScale,
+			);*/ 1;
 
 			const rotationAngle = colorRandomness * noise2Value;
 			const hue = Math.abs(rotationAngle) % 360;
-			const { r, g, b } = hsvToRgb(hue, 0.5, 0.5);
+			let res = hsvToRgb(hue, 0.5, 0.5);
+			r = res.r;
+			g = res.g;
+			b = res.b;
 
-			function setColor(color) {
-				const depthAdjustedRed = r + color;
-				const depthAdjustedGreen = g + Math.floor(-100 * color);
-				const depthAdjustedBlue = b + color;
-
-				const finalRed = Math.min(255, Math.max(0, depthAdjustedRed));
-				const finalGreen = Math.min(255, Math.max(0, depthAdjustedGreen));
-				const finalBlue = Math.min(255, Math.max(0, depthAdjustedBlue));
-
-				return `rgb(${finalRed}, ${finalGreen}, ${finalBlue})`;
-			}
-
-			ctx.fillStyle = setColor(noiseValue);
+			ctx.fillStyle = setColor(noiseValue, r, g, b);
 			ctx.fillRect(i, j, pixelSize, pixelSize);
 
 			if (noiseValue < threshold) {
@@ -101,7 +94,7 @@ async function WaterBackgroundChunkRenderer(x, y, chunkSize) {
 					Math.floor(noiseValue / colorBucketSize) * colorBucketSize;
 
 				if (currentColor !== colorBucket) {
-					processBatch(currentColor, batches, ctx);
+					processBatch(currentColor, batches, ctx, r, g, b);
 					currentColor = colorBucket;
 				}
 
@@ -110,8 +103,8 @@ async function WaterBackgroundChunkRenderer(x, y, chunkSize) {
 					if (color - 0.1 < currentColor) {
 						for (const item of batch) {
 							if (
-								Math.abs(item.x - x) < mergeDistance &&
-								Math.abs(item.y - y) < mergeDistance
+								Math.abs(item.x - i) < mergeDistance &&
+								Math.abs(item.y - j) < mergeDistance
 							) {
 								item.width += pixelSize;
 								item.height += pixelSize;
@@ -129,18 +122,18 @@ async function WaterBackgroundChunkRenderer(x, y, chunkSize) {
 					}
 					batches
 						.get(currentColor)
-						.push({ x, y, width: pixelSize, height: pixelSize });
+						.push({ x: i, y: j, width: pixelSize, height: pixelSize });
 				}
 			}
 		}
 	}
 
-	processBatch(currentColor, batches, ctx);
+	processBatch(currentColor, batches, ctx, r, g, b);
 
-	function processBatch(color, batches, ctx) {
-		if (!color || !batches.has(color)) return;
+	function processBatch(color, batches, ctx, r, g, b) {
+		if (color == null || !batches.has(color)) return;
 
-		ctx.fillStyle = setColor(color);
+		ctx.fillStyle = setColor(color, r, g, b);
 
 		ctx.beginPath();
 
@@ -153,6 +146,18 @@ async function WaterBackgroundChunkRenderer(x, y, chunkSize) {
 		batches.delete(color);
 	}
 
+	function setColor(color, r, g, b) {
+		const depthAdjustedRed = r + color * 255;
+		const depthAdjustedGreen = g + Math.floor(-100 * color);
+		const depthAdjustedBlue = b + color * 255;
+
+		const finalRed = Math.min(255, Math.max(0, depthAdjustedRed));
+		const finalGreen = Math.min(255, Math.max(0, depthAdjustedGreen));
+		const finalBlue = Math.min(255, Math.max(0, depthAdjustedBlue));
+
+		return `rgb(${finalRed}, ${finalGreen}, ${finalBlue})`;
+	}
+
 	return canvas.toDataURL();
 }
 
@@ -163,69 +168,81 @@ export default function WaterBackgroundChunk({
 	currentPlayerChunkId: { currentPlayerChunkId, setCurrentPlayerChunkId },
 }) {
 	const canvasRef = useRef(null);
-	const [savedChunks, setSavedChunks] = useState({});
+
+	async function renderChunk(x, y, chunkSize, boatInfo, offset) {
+		return WaterBackgroundChunkRenderer(x, y, chunkSize, boatInfo, offset);
+	}
 
 	useEffect(() => {
-		async function renderChunk(x, y, chunkSize) {
-			return await WaterBackgroundChunkRenderer(x, y, chunkSize);
-		}
-
 		const canvas = canvasRef.current;
 		if (!canvas) return;
 
 		canvas.width = screenSize.x;
 		canvas.height = screenSize.y;
 
-		const chunk_size = 100;
-
+		const chunk_size = 200;
 		const playerChunkId = [
-			Math.floor(boatInfo.x / 100),
-			Math.floor(boatInfo.y / 100),
+			Math.floor(boatInfo.x / chunk_size),
+			Math.floor(boatInfo.y / chunk_size),
 		];
 
 		const maxChunks = {
-			x: Math.floor(screenSize.x / 100) + 1,
-			y: Math.floor(screenSize.y / 100) + 1,
+			x: Math.floor(screenSize.x / chunk_size) + 2,
+			y: Math.floor(screenSize.y / chunk_size) + 2,
 		};
 
 		const offset = {
-			x: boatInfo.x - Math.floor(boatInfo.x / 100) * 100,
-			y: boatInfo.y - Math.floor(boatInfo.y / 100) * 100,
+			x: boatInfo.x - Math.floor(boatInfo.x / chunk_size) * chunk_size,
+			y: boatInfo.y - Math.floor(boatInfo.y / chunk_size) * chunk_size,
 		};
 
 		const ctx = canvas.getContext("2d");
 
-		const renderAndDrawChunk = async (chunkId, rectX, rectY) => {
-			if (!savedChunks[chunkId]) {
+		const renderAndDrawChunk = async (chunkId, rectX, rectY, xId, yId) => {
+			if (!savedBackgroundChunks[chunkId]) {
 				console.log(`RENDERING CHUNK ${chunkId} AT ${rectX}, ${rectY}`);
-				const chunk = await renderChunk(rectX, rectY, chunk_size);
+				const chunk = await renderChunk(xId, yId, chunk_size, boatInfo, offset);
 				const img = new Image();
 				img.src = chunk;
-				img.onload = () => {
-					ctx.drawImage(img, rectX, rectY);
-					setSavedChunks((prevChunks) => ({
-						...prevChunks,
-						[chunkId]: chunk,
-					}));
-				};
+				/*img.onload = () => {*/
+				ctx.drawImage(img, rectX - offset.x, rectY - offset.y);
+				setSavedBackgroundChunks((prevChunks) => ({
+					...prevChunks,
+					[chunkId]: chunk,
+				}));
+				/*};*/
 			} else {
 				const img = new Image();
-				img.src = savedChunks[chunkId];
-				img.onload = () => {
-					ctx.drawImage(img, rectX, rectY);
-				};
+				img.src = savedBackgroundChunks[chunkId];
+				/*img.onload = () => {*/
+				ctx.drawImage(img, rectX - offset.x, rectY - offset.y);
+				/*};*/
 			}
 		};
 
-		for (let x = 0; x < maxChunks.x; x++) {
-			for (let y = 0; y < maxChunks.y; y++) {
-				const chunkId = `${x + playerChunkId[0]}-${y + playerChunkId[1]}`;
-				const rectX = x * chunk_size - offset.x;
-				const rectY = y * chunk_size - offset.y;
-				renderAndDrawChunk(chunkId, rectX, rectY);
+		const renderChunks = async () => {
+			for (let x = 0; x < maxChunks.x; x++) {
+				for (let y = 0; y < maxChunks.y; y++) {
+					const chunkId = `${x + playerChunkId[0]}-${y + playerChunkId[1]}`;
+					const rectX = x * chunk_size;
+					const rectY = y * chunk_size;
+					await renderAndDrawChunk(
+						chunkId,
+						rectX,
+						rectY,
+						x + playerChunkId[0],
+						y + playerChunkId[1],
+					);
+				}
 			}
-		}
-	}, [boatInfo, screenSize, savedChunks, setSavedChunks]);
+		};
 
-	return <canvas ref={canvasRef} />;
+		renderChunks();
+	}, [screenSize, boatInfo]);
+
+	return (
+		<div>
+			<canvas ref={canvasRef} />
+		</div>
+	);
 }
