@@ -173,5 +173,5 @@ dist
 
 # Finder (MacOS) folder config
 .DS_Store
-bot/bun.lockb
+.lockb
 backend/data/players.json
