@@ -95,8 +95,8 @@ export default function GameKeyboardControls({
 				if (newSpeed < 0.5 && newSpeed > -0.5) newSpeed = 0;
 			}
 
-			newX += Math.sin((newRotation * Math.PI) / 180) * newSpeed;
-			newY -= Math.cos((newRotation * Math.PI) / 180) * newSpeed;
+			newX -= Math.sin((newRotation * Math.PI) / 180) * newSpeed;
+			newY += Math.cos((newRotation * Math.PI) / 180) * newSpeed;
 
 			setBoatInfo({
 				...boatInfo,
@@ -125,13 +125,18 @@ export default function GameKeyboardControls({
 			];
 
 			for (let i = 0; i < notification_snappy.length; i++) {
-				if (
-					(Math.abs(newRotation >= notification_rotations[i] - 33) &&
-						Math.abs(newRotation <= notification_rotations[i] + 33)) ||
-					(Math.abs(newRotation + 360 >= notification_rotations[i] - 33) &&
-						Math.abs(newRotation + 360 <= notification_rotations[i] + 33))
-				) {
+				let rotation_difference = newRotation - notification_rotations[i];
+
+				if (Math.abs(rotation_difference) <= 33) {
 					let NewLeftNotificationsPlacement = notification_snappy[i];
+
+					let movement_difference =
+						Math.abs(
+							CurrentLeftNotificationsPlacement.x - notification_snappy[i].x,
+						) +
+						Math.abs(
+							CurrentLeftNotificationsPlacement.y - notification_snappy[i].y,
+						);
 
 					if (
 						Math.abs(
@@ -140,12 +145,10 @@ export default function GameKeyboardControls({
 						) < 1
 					) {
 						CurrentLeftNotificationsPlacement.transparency = 1;
-						break;
+						if (movement_difference <= 10) {
+							break;
+						}
 					}
-
-					let diff =
-						NewLeftNotificationsPlacement.rotate -
-						CurrentLeftNotificationsPlacement.rotate;
 
 					let diffX =
 						NewLeftNotificationsPlacement.x -
@@ -153,6 +156,9 @@ export default function GameKeyboardControls({
 					let diffY =
 						NewLeftNotificationsPlacement.y -
 						CurrentLeftNotificationsPlacement.y;
+					let diff =
+						NewLeftNotificationsPlacement.rotate -
+						CurrentLeftNotificationsPlacement.rotate;
 
 					CurrentLeftNotificationsPlacement.rotate += diff / 30;
 					CurrentLeftNotificationsPlacement.x += diffX / 20;
