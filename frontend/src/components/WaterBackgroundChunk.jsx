@@ -55,13 +55,19 @@ function WaterBackgroundChunkRenderer(x, y, chunkSize, boatInfo, offset) {
 	canvas.width = chunkSize;
 	canvas.height = chunkSize;
 
+	const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+	gradient.addColorStop(0, "blue");
+	gradient.addColorStop(1, "white");
+	ctx.fillStyle = gradient;
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+
 	const noiseScale = 0.005;
 	const colorNoiseScale = 0.00008;
 	const colorRandomness = 2;
-	const pixelSize = 8;
+	const pixelSize = 25;
 	const threshold = 0.1;
-	const colorBucketSize = 0.1;
-	const mergeDistance = pixelSize * 1;
+	const colorBucketSize = 0.05;
+	/*const mergeDistance = pixelSize * 1;*/
 
 	let batches = new Map();
 	let currentColor = null;
@@ -74,12 +80,12 @@ function WaterBackgroundChunkRenderer(x, y, chunkSize, boatInfo, offset) {
 				(x * chunkSize + i) * noiseScale,
 				(y * chunkSize + j) * noiseScale,
 			);
-			const noise2Value = /*noise2.perlin2(
+			const noise2Value = noise2.perlin2(
 				(x * chunkSize + i) * colorNoiseScale,
 				(y * chunkSize + j) * colorNoiseScale,
-			);*/ 1;
+			);
 
-			const rotationAngle = colorRandomness * noise2Value;
+			const rotationAngle = colorRandomness * noise2Value + 90;
 			const hue = Math.abs(rotationAngle) % 360;
 			let res = hsvToRgb(hue, 0.5, 0.5);
 			r = res.r;
@@ -98,32 +104,33 @@ function WaterBackgroundChunkRenderer(x, y, chunkSize, boatInfo, offset) {
 					currentColor = colorBucket;
 				}
 
-				let collided = false;
-				for (let [color, batch] of batches) {
-					if (color - 0.1 < currentColor) {
-						for (const item of batch) {
-							if (
-								Math.abs(item.x - i) < mergeDistance &&
-								Math.abs(item.y - j) < mergeDistance
-							) {
-								item.width += pixelSize;
-								item.height += pixelSize;
-								collided = true;
-								break;
+				/*let collided = false;
+					for (let [color, batch] of batches) {
+						if (color - 0.1 < currentColor) {
+							for (const item of batch) {
+								if (
+									Math.abs(item.x - i) < mergeDistance &&
+									Math.abs(item.y - j) < mergeDistance
+								) {
+									item.width += pixelSize;
+									item.height += pixelSize;
+									collided = true;
+									break;
+								}
 							}
 						}
+						if (collided) break;
 					}
-					if (collided) break;
-				}
 
-				if (!collided) {
-					if (!batches.has(currentColor)) {
-						batches.set(currentColor, []);
+					if (!collided) {
+						if (!batches.has(currentColor)) {
+							batches.set(currentColor, []);
+						}
+						batches
+							.get(currentColor)
+							.push({ x: i, y: j, width: pixelSize, height: pixelSize });
 					}
-					batches
-						.get(currentColor)
-						.push({ x: i, y: j, width: pixelSize, height: pixelSize });
-				}
+				}*/
 			}
 		}
 	}
@@ -147,13 +154,17 @@ function WaterBackgroundChunkRenderer(x, y, chunkSize, boatInfo, offset) {
 	}
 
 	function setColor(color, r, g, b) {
-		const depthAdjustedRed = r + color * 255;
-		const depthAdjustedGreen = g + Math.floor(-100 * color);
-		const depthAdjustedBlue = b + color * 255;
+		const depthAdjustedRed = r + color * 5;
+		const depthAdjustedGreen = g + Math.floor(-20 * color);
+		const depthAdjustedBlue = b + color * 100;
 
-		const finalRed = Math.min(255, Math.max(0, depthAdjustedRed));
-		const finalGreen = Math.min(255, Math.max(0, depthAdjustedGreen));
-		const finalBlue = Math.min(255, Math.max(0, depthAdjustedBlue));
+		let finalRed = Math.min(255, Math.max(0, depthAdjustedRed));
+		let finalGreen = Math.min(255, Math.max(0, depthAdjustedGreen));
+		let finalBlue = Math.min(255, Math.max(0, depthAdjustedBlue));
+
+		/*finalRed += Math.random() * 10 - 25;
+		finalGreen += Math.random() * 10 - 25;
+		finalBlue += Math.random() * 10 - 25;*/
 
 		return `rgb(${finalRed}, ${finalGreen}, ${finalBlue})`;
 	}
@@ -181,19 +192,20 @@ export default function WaterBackgroundChunk({
 		canvas.height = screenSize.y;
 
 		const chunk_size = 200;
-		const playerChunkId = [
-			Math.floor(boatInfo.x / chunk_size),
-			Math.floor(boatInfo.y / chunk_size),
-		];
 
 		const maxChunks = {
 			x: Math.floor(screenSize.x / chunk_size) + 2,
 			y: Math.floor(screenSize.y / chunk_size) + 2,
 		};
 
+		const playerChunkId = [
+			maxChunks.x - Math.floor(boatInfo.x / chunk_size),
+			maxChunks.y - Math.floor(boatInfo.y / chunk_size),
+		];
+
 		const offset = {
-			x: boatInfo.x - Math.floor(boatInfo.x / chunk_size) * chunk_size,
-			y: boatInfo.y - Math.floor(boatInfo.y / chunk_size) * chunk_size,
+			x: Math.floor(boatInfo.x / chunk_size) * chunk_size - boatInfo.x,
+			y: Math.floor(boatInfo.y / chunk_size) * chunk_size - boatInfo.y,
 		};
 
 		const ctx = canvas.getContext("2d");
@@ -204,19 +216,23 @@ export default function WaterBackgroundChunk({
 				const chunk = await renderChunk(xId, yId, chunk_size, boatInfo, offset);
 				const img = new Image();
 				img.src = chunk;
-				/*img.onload = () => {*/
-				ctx.drawImage(img, rectX - offset.x, rectY - offset.y);
+				ctx.drawImage(
+					img,
+					rectX - offset.x - chunk_size,
+					rectY - offset.y - chunk_size,
+				);
 				setSavedBackgroundChunks((prevChunks) => ({
 					...prevChunks,
 					[chunkId]: chunk,
 				}));
-				/*};*/
 			} else {
 				const img = new Image();
 				img.src = savedBackgroundChunks[chunkId];
-				/*img.onload = () => {*/
-				ctx.drawImage(img, rectX - offset.x, rectY - offset.y);
-				/*};*/
+				ctx.drawImage(
+					img,
+					rectX - offset.x - chunk_size,
+					rectY - offset.y - chunk_size,
+				);
 			}
 		};
 
@@ -238,11 +254,7 @@ export default function WaterBackgroundChunk({
 		};
 
 		renderChunks();
-	}, [screenSize, boatInfo]);
+	}, [boatInfo]);
 
-	return (
-		<div>
-			<canvas ref={canvasRef} />
-		</div>
-	);
+	return <canvas ref={canvasRef} />;
 }
