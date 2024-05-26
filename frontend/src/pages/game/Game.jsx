@@ -5,6 +5,8 @@ import WindowResize from "../../components/WindowResize";
 import BoatInfo from "../../components/BoatInfo";
 import GameKeyboardControls from "../../components/GameKeyboardControls";
 import WaterBackgroundChunk from "../../components/WaterBackgroundChunk";
+import PerlinNoiseCanvas from "../../components/WaterBackgroundNoise";
+import { Noise } from "noisejs";
 
 function Game({ setCurrentPage, access_token }) {
 	//MARK: Use states
@@ -95,184 +97,22 @@ function Game({ setCurrentPage, access_token }) {
 
 	const [cachedWaterChunks, setCachedWaterChunks] = useState({});
 
-	//MARK: Water background
-	/*function WaterBackground({ canvasSize, player_x, player_y, fast_mode }) {
-		const canvasRef = useRef(null);
+	/*<PerlinNoiseCanvas screenSize={screenSize} />*/
 
-		fast_mode = true;
-
-		function hsvToRgb(h, s, v) {
-			let r, g, b;
-			const i = Math.floor(h * 6);
-			const f = h * 6 - i;
-			const p = v * (1 - s);
-			const q = v * (1 - f * s);
-			const t = v * (1 - (1 - f) * s);
-
-			switch (i % 6) {
-				case 0:
-					r = v;
-					g = t;
-					b = p;
-					break;
-				case 1:
-					r = q;
-					g = v;
-					b = p;
-					break;
-				case 2:
-					r = p;
-					g = v;
-					b = t;
-					break;
-				case 3:
-					r = p;
-					g = q;
-					b = v;
-					break;
-				case 4:
-					r = t;
-					g = p;
-					b = v;
-					break;
-				case 5:
-					r = v;
-					g = p;
-					b = q;
-					break;
-			}
-
-			return {
-				r: r * 255,
-				g: g * 255,
-				b: b * 255,
-			};
-		}
-
-		useEffect(() => {
-			if (!canvasRef.current) return;
-
-			const canvas = canvasRef.current;
-			const ctx = canvas.getContext("2d");
-			const noise = new Noise(1);
-			const noise2 = new Noise(2);
-
-			const noiseScale = 0.005;
-			const colorNoiseScale = 0.00008;
-			const colorRandomness = 2;
-
-			const noise2Value = noise2.perlin2(
-				player_x * colorNoiseScale,
-				player_y * colorNoiseScale,
-			);
-
-			const rotationAngle = colorRandomness * noise2Value;
-			const hue = Math.abs(rotationAngle) % 360;
-			const { r, g, b } = hsvToRgb(hue, 0.5, 0.5);
-
-			canvas.width = canvasSize.width;
-			canvas.height = canvasSize.height;
-
-			const pixelSize = 8;
-			const threshold = 0.1;
-			const colorBucketSize = fast_mode ? 0.1 : 0.02;
-			const mergeDistance = pixelSize * (fast_mode ? 5 : 2);
-
-			let batches = new Map();
-			let currentColor = null;
-
-			ctx.fillStyle = setColor(noise2Value);
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-			for (let y = 0; y < canvas.height; y += pixelSize) {
-				for (let x = 0; x < canvas.width; x += pixelSize) {
-					const noiseValue = noise.perlin2(
-						(x + player_x) * noiseScale,
-						(y + player_y) * noiseScale,
-					);
-
-					if (noiseValue < threshold) {
-						const colorBucket =
-							Math.floor(noiseValue / colorBucketSize) * colorBucketSize;
-
-						if (currentColor !== colorBucket) {
-							processBatch(currentColor, batches, ctx);
-							currentColor = colorBucket;
-						}
-
-						let collided = false;
-						for (let [color, batch] of batches) {
-							if (color - 0.1 < currentColor) {
-								for (const item of batch) {
-									if (
-										Math.abs(item.x - x) < mergeDistance &&
-										Math.abs(item.y - y) < mergeDistance
-									) {
-										item.width += pixelSize;
-										item.height += pixelSize;
-										collided = true;
-										break;
-									}
-								}
-							}
-							if (collided) break;
-						}
-
-						if (!collided) {
-							if (!batches.has(currentColor)) {
-								batches.set(currentColor, []);
-							}
-							batches
-								.get(currentColor)
-								.push({ x, y, width: pixelSize, height: pixelSize });
-						}
-					}
-				}
-			}
-
-			processBatch(currentColor, batches, ctx);
-
-			function setColor(color) {
-				const depthAdjustedRed = r + color;
-				const depthAdjustedGreen = g + Math.floor(-100 * color);
-				const depthAdjustedBlue = b + color;
-
-				const finalRed = Math.min(255, Math.max(0, depthAdjustedRed));
-				const finalGreen = Math.min(255, Math.max(0, depthAdjustedGreen));
-				const finalBlue = Math.min(255, Math.max(0, depthAdjustedBlue));
-
-				return `rgb(${finalRed}, ${finalGreen}, ${finalBlue})`;
-			}
-
-			function processBatch(color, batches, ctx) {
-				if (!color || !batches.has(color)) return;
-
-				ctx.fillStyle = setColor(color);
-
-				ctx.beginPath();
-
-				const batch = batches.get(color);
-				for (const item of batch) {
-					ctx.fillRect(item.x, item.y, item.width, item.height);
-				}
-
-				ctx.closePath();
-				batches.delete(color);
-			}
-		}, [canvasSize, player_x, player_y]);
-
-		return <canvas ref={canvasRef} />;
-	}*/
-
-	/*{WaterBackground({
-				screen: { screenSize, setScreenSize },
-				boatInfo: { boatInfo, setBoatInfo },
-				savedBackgroundChunks: {
+	/*
+	<WaterBackgroundChunk
+				screen={{ screenSize, setScreenSize }}
+				boatInfo={{ boatInfo, setBoatInfo }}
+				savedBackgroundChunks={{
 					savedBackgroundChunks,
 					setSavedBackgroundChunks,
-				},
-				currentPlayerChunkId: { currentPlayerChunkId, setCurrentPlayerChunkId },
-			})}*/
+				}}
+				currentPlayerChunkId={{
+					currentPlayerChunkId,
+					setCurrentPlayerChunkId,
+				}}
+				className="absolute top-0 left-0 z-index-[-1]"
+			/>*/
 
 	//MARK: HTML
 	return (
@@ -293,6 +133,7 @@ function Game({ setCurrentPage, access_token }) {
 						width: "auto",
 						opacity: `${leftNotificationsPlacement.transparency}`,
 						transform: `rotate(${Math.floor(leftNotificationsPlacement.rotate + rotationSpeed * 4)}deg)`,
+						zIndex: 30,
 					}}
 				>
 					<p
@@ -326,10 +167,11 @@ function Game({ setCurrentPage, access_token }) {
 						top: `calc(50% - 25px)`,
 						imageRendering: "pixelated",
 						transform: `rotate(${boatInfo.boat.rotation}deg)`,
+						zIndex: 30,
 					}}
 				/>
 			</div>
-			<div className="absolute top-0 right-0 p-4">
+			<div className="absolute top-0 right-0 p-4 z-30">
 				<h3 className="text-white">Boat Information</h3>
 				<p className="text-white">X: {boatInfo.x.toFixed(1)}</p>
 				<p className="text-white">Y: {boatInfo.y.toFixed(1)}</p>
@@ -345,15 +187,25 @@ function Game({ setCurrentPage, access_token }) {
 				</p>
 				<p>Rotate speed: {rotationSpeed.toFixed(1)}</p>
 			</div>
-			<WaterBackgroundChunk
-				screen={{ screenSize, setScreenSize }}
-				boatInfo={{ boatInfo, setBoatInfo }}
-				savedBackgroundChunks={{
-					savedBackgroundChunks,
-					setSavedBackgroundChunks,
-				}}
-				currentPlayerChunkId={{ currentPlayerChunkId, setCurrentPlayerChunkId }}
-			/>
+			<div className="relative w-full h-full z-0">
+				<div className="absolute top-0 left-0 w-full h-full z-0">
+					<WaterBackgroundChunk
+						screen={{ screenSize, setScreenSize }}
+						boatInfo={{ boatInfo, setBoatInfo }}
+						savedBackgroundChunks={{
+							savedBackgroundChunks,
+							setSavedBackgroundChunks,
+						}}
+						currentPlayerChunkId={{
+							currentPlayerChunkId,
+							setCurrentPlayerChunkId,
+						}}
+					/>
+				</div>
+				<div className="absolute top-0 left-0 w-full h-full z-0">
+					<PerlinNoiseCanvas screenSize={screenSize} boatInfo={boatInfo} />
+				</div>
+			</div>
 		</div>
 	);
 }
